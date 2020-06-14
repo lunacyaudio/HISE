@@ -11,7 +11,6 @@ tools/api generator/xml/
 changelog*
 projects/plugin/Builds/
 projects/plugin/JuceLibraryCode/
-projects/standalone/Builds/
 extras/demo_project/Binaries/
 *.licence
 Autosave*
