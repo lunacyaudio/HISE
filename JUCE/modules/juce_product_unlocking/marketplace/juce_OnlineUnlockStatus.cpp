@@ -424,6 +424,26 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleXmlReply (XmlElement 
     return r;
 }
 
+OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleJsonReply (var json)
+{
+    UnlockResult r;
+
+    String token = json["token"];
+    if (token.isEmpty()) {
+      String errcode = json["code"];
+      DBG(errcode);
+      DBG("FAILED LOGIN");
+      r.succeeded = false;
+    } else {
+      DBG("SUCCESFUL LOGIN");
+      DBG(token);
+      r.succeeded = false;
+    }
+
+
+    return r;
+}
+
 OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleFailedConnection()
 {
     UnlockResult r;
@@ -465,8 +485,9 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::attemptWebserverUnlock (con
 
     DBG ("Reply from server: " << reply);
 
-    if (auto xml = parseXML (reply))
-        return handleXmlReply (*xml);
+    var parsedJson;
+    if (JSON::parse(reply, parsedJson).wasOk())
+        return handleJsonReply (parsedJson);
 
     return handleFailedConnection();
 }

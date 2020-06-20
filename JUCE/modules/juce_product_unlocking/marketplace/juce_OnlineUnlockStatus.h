@@ -267,6 +267,7 @@ private:
     ValueTree status;
 
     UnlockResult handleXmlReply (XmlElement);
+    UnlockResult handleJsonReply (var);
     UnlockResult handleFailedConnection();
 
     static const char* unlockedProp;
