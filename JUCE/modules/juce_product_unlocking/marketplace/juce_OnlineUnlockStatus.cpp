@@ -182,8 +182,8 @@ struct KeyFileUtils
 
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_data_structures
-const char* OnlineUnlockStatus::unlockedProp = "u";
-const char* OnlineUnlockStatus::expiryTimeProp = "t";
+const char* OnlineUnlockStatus::unlockedProp = "umpteenth";
+const char* OnlineUnlockStatus::expiryTimeProp = "exptprop";
 static const char* stateTagName = "REG";
 static const char* userNameProp = "user";
 static const char* keyfileDataProp = "key";
@@ -317,8 +317,11 @@ StringArray OnlineUnlockStatus::MachineIDUtilities::getLocalMachineIDs()
 {
     auto identifiers = SystemStats::getDeviceIdentifiers();
 
-    for (auto& identifier : identifiers)
+    for (auto& identifier : identifiers) {
         identifier = getEncodedIDString (identifier);
+        DBG("WWE HIEER");
+        DBG(identifier);
+    }
 
     return identifiers;
 }
@@ -340,6 +343,20 @@ void OnlineUnlockStatus::setUserEmail (const String& usernameOrEmail)
 String OnlineUnlockStatus::getUserEmail() const
 {
     return status[userNameProp].toString();
+}
+
+bool OnlineUnlockStatus::applyJwtToken (String jwtToken)
+{
+  /* TODO(lachlan): implement expiry and storage logic */
+  status.setProperty(keyfileDataProp, jwtToken, nullptr);
+  status.removeProperty(unlockedProp, nullptr);
+
+  // TODO(lachlan): this looks like it should be more obfuscated.
+  var actualResult (true);
+
+  status.setProperty(unlockedProp, actualResult, nullptr);
+
+  return isUnlocked();
 }
 
 bool OnlineUnlockStatus::applyKeyFile (String keyFileContent)
@@ -428,16 +445,14 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleJsonReply (var json)
 {
     UnlockResult r;
 
+    // TODO(lachlan): error handling
     String token = json["token"];
     if (token.isEmpty()) {
       String errcode = json["code"];
-      DBG(errcode);
-      DBG("FAILED LOGIN");
       r.succeeded = false;
+      r.errorMessage = "Incorrect username/password combination.";
     } else {
-      DBG("SUCCESFUL LOGIN");
-      DBG(token);
-      r.succeeded = false;
+      r.succeeded = token.length() > 10 && applyJwtToken (token);
     }
 
 
