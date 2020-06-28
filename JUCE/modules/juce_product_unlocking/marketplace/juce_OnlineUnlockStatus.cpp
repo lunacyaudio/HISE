@@ -180,6 +180,7 @@ struct KeyFileUtils
     }
 };
 
+
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_data_structures
 const char* OnlineUnlockStatus::unlockedProp = "umpteenth";
@@ -319,8 +320,6 @@ StringArray OnlineUnlockStatus::MachineIDUtilities::getLocalMachineIDs()
 
     for (auto& identifier : identifiers) {
         identifier = getEncodedIDString (identifier);
-        DBG("WWE HIEER");
-        DBG(identifier);
     }
 
     return identifiers;
@@ -345,10 +344,12 @@ String OnlineUnlockStatus::getUserEmail() const
     return status[userNameProp].toString();
 }
 
-bool OnlineUnlockStatus::applyJwtToken (String jwtToken)
+bool OnlineUnlockStatus::applyJwtToken (var token)
 {
-  /* TODO(lachlan): implement expiry and storage logic */
-  status.setProperty(keyfileDataProp, jwtToken, nullptr);
+  // NB: setting this property on the `status` ValueTree, which stores it I'm
+  // fairly sure...
+  setUserEmail(token["user"]["user_email"]);
+  status.setProperty(keyfileDataProp, token["jwt"]["token"], nullptr);
   status.removeProperty(unlockedProp, nullptr);
 
   // TODO(lachlan): this looks like it should be more obfuscated.
@@ -446,16 +447,17 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleJsonReply (var json)
     UnlockResult r;
 
     // TODO(lachlan): error handling
-    String token = json["token"];
-    if (token.isEmpty()) {
+    String token = json["jwt"]["token"];
+    var userData = json["user"]["data"];
+    String userEmail = userData["user_email"];
+    // TODO(lachlan): potentially more checks regarding roles
+    if (token.isEmpty() || userEmail.isEmpty()) {
       String errcode = json["code"];
       r.succeeded = false;
       r.errorMessage = "Incorrect username/password combination.";
     } else {
-      r.succeeded = token.length() > 10 && applyJwtToken (token);
+      r.succeeded = token.length() > 10 && applyJwtToken (json);
     }
-
-
     return r;
 }
 
@@ -498,7 +500,7 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::attemptWebserverUnlock (con
 
     auto reply = readReplyFromWebserver (email, password);
 
-    DBG ("Reply from server: " << reply);
+    // DBG ("Reply from server: " << reply);
 
     var parsedJson;
     if (JSON::parse(reply, parsedJson).wasOk())

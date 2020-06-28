@@ -172,7 +172,7 @@ public:
     */
     bool applyKeyFile (String keyFileContent);
 
-    bool applyJwtToken (String jwtToken);
+    bool applyJwtToken (var token);
 
     /** This provides some details about the reply that the server gave in a call
         to attemptWebserverUnlock().
