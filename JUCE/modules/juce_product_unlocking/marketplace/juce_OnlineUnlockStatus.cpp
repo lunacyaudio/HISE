@@ -180,10 +180,40 @@ struct KeyFileUtils
     }
 };
 
+struct JwtUtils
+{
+    static String getEmail(var jwt)         { return jwt["user"]["data"]["user_email"].toString(); }
+    static String getActualToken(var jwt)   { return jwt["jwt"]["token"].toString(); }
+    static bool containsValidToken(var jwt)
+    {
+        return getEmail(jwt).isNotEmpty() && getActualToken(jwt).isNotEmpty();
+    }
+
+    static int getTokenExpires(var jwt) {
+        // NB: time returned from server as seconds since epoch, we want
+        // milliseconds.
+        return ((int) jwt["jwt"]["token_expires"]) * 1000;
+    }
+
+    struct JwtData
+    {
+      String email, actualToken;
+      Time expiryTime;
+    };
+
+    static JwtData getDataFromJwt(var jwt) {
+      JwtData data;
+      data.email = getEmail(jwt);
+      data.actualToken = getActualToken(jwt);
+      data.expiryTime = Time (getTokenExpires(jwt));
+      return data;
+    }
+};
+
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_data_structures
-const char* OnlineUnlockStatus::unlockedProp = "u";
-const char* OnlineUnlockStatus::expiryTimeProp = "t";
+const char* OnlineUnlockStatus::unlockedProp = "umpteenth";
+const char* OnlineUnlockStatus::expiryTimeProp = "exptprop";
 static const char* stateTagName = "REG";
 static const char* userNameProp = "user";
 static const char* keyfileDataProp = "key";
@@ -235,30 +265,23 @@ void OnlineUnlockStatus::load()
     else
         status = ValueTree (stateTagName);
 
-    StringArray localMachineNums (getLocalMachineIDs());
+    // StringArray localMachineNums (getLocalMachineIDs());
+    //
+    // if (machineNumberAllowed (StringArray ("1234"), localMachineNums))
+    //     status.removeProperty (unlockedProp, nullptr);
 
-    if (machineNumberAllowed (StringArray ("1234"), localMachineNums))
-        status.removeProperty (unlockedProp, nullptr);
+    JwtUtils::JwtData data;
+    data = JwtUtils::getDataFromJwt(status[keyfileDataProp]);
 
-    KeyFileUtils::KeyFileData data;
-    data = KeyFileUtils::getDataFromKeyFile (KeyFileUtils::getXmlFromKeyFile (status[keyfileDataProp], getPublicKey()));
-
-    if (data.keyFileExpires)
-    {
-        if (! doesProductIDMatch (data.appID))
-            status.removeProperty (expiryTimeProp, nullptr);
-
-        if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
-            status.removeProperty (expiryTimeProp, nullptr);
-    }
-    else
-    {
-        if (! doesProductIDMatch (data.appID))
-            status.removeProperty (unlockedProp, nullptr);
-
-        if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
-            status.removeProperty (unlockedProp, nullptr);
-    }
+    // TODO(lachlan):
+    // 1. replace `doesProductIDMatch` with `validateJwtToken`, which sends
+    //    a request....
+    // 2. conditionally renew the token if the expiryTime is approaching
+    // if (! doesProductIDMatch (data.appID))
+    //     status.removeProperty (unlockedProp, nullptr);
+    //
+    // if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
+    //     status.removeProperty (unlockedProp, nullptr);
 }
 
 void OnlineUnlockStatus::save()
@@ -317,8 +340,9 @@ StringArray OnlineUnlockStatus::MachineIDUtilities::getLocalMachineIDs()
 {
     auto identifiers = SystemStats::getDeviceIdentifiers();
 
-    for (auto& identifier : identifiers)
+    for (auto& identifier : identifiers) {
         identifier = getEncodedIDString (identifier);
+    }
 
     return identifiers;
 }
@@ -340,6 +364,32 @@ void OnlineUnlockStatus::setUserEmail (const String& usernameOrEmail)
 String OnlineUnlockStatus::getUserEmail() const
 {
     return status[userNameProp].toString();
+}
+
+bool OnlineUnlockStatus::applyJwtToken (var token)
+{
+    setUserEmail(JwtUtils::getEmail(token));
+    status.setProperty(keyfileDataProp, JwtUtils::getActualToken(token), nullptr);
+    status.removeProperty(unlockedProp, nullptr);
+
+    // NOTE(lachlan): this obfuscation code is copied from `applyKeyFile` below.
+    // Probably not necessary. Does it actually make harder to backwards
+    // engineer? Note we're not using MachineIDs anywhere to verify now.
+    var actualResult (0), dummyResult (1.0);
+    var v (JwtUtils::containsValidToken(token));
+    actualResult.swapWith (v);
+    v = (var) false;
+    dummyResult.swapWith (v);
+    jassert (! dummyResult);
+
+    // jwt always expires
+    if ((! dummyResult) && actualResult) {
+        status.setProperty(expiryTimeProp, JwtUtils::getTokenExpires(token), nullptr);
+        status.setProperty (unlockedProp, actualResult, nullptr);
+        return getExpiryTime().toMilliseconds() > 0;
+    }
+
+    return false;
 }
 
 bool OnlineUnlockStatus::applyKeyFile (String keyFileContent)
@@ -424,6 +474,20 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleXmlReply (XmlElement 
     return r;
 }
 
+OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleJsonReply (var json)
+{
+    UnlockResult r;
+
+    if (!JwtUtils::containsValidToken(json)) {
+      String errcode = json["code"];
+      r.succeeded = false;
+      r.errorMessage = "Incorrect username/password combination.";
+    } else {
+      r.succeeded = applyJwtToken (json);
+    }
+    return r;
+}
+
 OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleFailedConnection()
 {
     UnlockResult r;
@@ -463,10 +527,11 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::attemptWebserverUnlock (con
 
     auto reply = readReplyFromWebserver (email, password);
 
-    DBG ("Reply from server: " << reply);
+    // DBG ("Reply from server: " << reply);
 
-    if (auto xml = parseXML (reply))
-        return handleXmlReply (*xml);
+    var parsedJson;
+    if (JSON::parse(reply, parsedJson).wasOk())
+        return handleJsonReply (parsedJson);
 
     return handleFailedConnection();
 }

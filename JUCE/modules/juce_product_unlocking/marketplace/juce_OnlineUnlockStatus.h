@@ -172,6 +172,8 @@ public:
     */
     bool applyKeyFile (String keyFileContent);
 
+    bool applyJwtToken (var token);
+
     /** This provides some details about the reply that the server gave in a call
         to attemptWebserverUnlock().
     */
@@ -267,6 +269,7 @@ private:
     ValueTree status;
 
     UnlockResult handleXmlReply (XmlElement);
+    UnlockResult handleJsonReply (var);
     UnlockResult handleFailedConnection();
 
     static const char* unlockedProp;
