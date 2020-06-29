@@ -190,8 +190,23 @@ struct JwtUtils
     }
 
     static int getTokenExpires(var jwt) {
-        // TODO(lachlan): make this the right format in milliseconds
-        return (int) jwt["jwt"]["token_expires"];
+        // NB: time returned from server as seconds since epoch, we want
+        // milliseconds.
+        return ((int) jwt["jwt"]["token_expires"]) * 1000;
+    }
+
+    struct JwtData
+    {
+      String email, actualToken;
+      Time expiryTime;
+    };
+
+    static JwtData getDataFromJwt(var jwt) {
+      JwtData data;
+      data.email = getEmail(jwt);
+      data.actualToken = getActualToken(jwt);
+      data.expiryTime = Time (getTokenExpires(jwt));
+      return data;
     }
 };
 
@@ -250,30 +265,23 @@ void OnlineUnlockStatus::load()
     else
         status = ValueTree (stateTagName);
 
-    StringArray localMachineNums (getLocalMachineIDs());
+    // StringArray localMachineNums (getLocalMachineIDs());
+    //
+    // if (machineNumberAllowed (StringArray ("1234"), localMachineNums))
+    //     status.removeProperty (unlockedProp, nullptr);
 
-    if (machineNumberAllowed (StringArray ("1234"), localMachineNums))
-        status.removeProperty (unlockedProp, nullptr);
+    JwtUtils::JwtData data;
+    data = JwtUtils::getDataFromJwt(status[keyfileDataProp]);
 
-    KeyFileUtils::KeyFileData data;
-    data = KeyFileUtils::getDataFromKeyFile (KeyFileUtils::getXmlFromKeyFile (status[keyfileDataProp], getPublicKey()));
-
-    if (data.keyFileExpires)
-    {
-        if (! doesProductIDMatch (data.appID))
-            status.removeProperty (expiryTimeProp, nullptr);
-
-        if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
-            status.removeProperty (expiryTimeProp, nullptr);
-    }
-    else
-    {
-        if (! doesProductIDMatch (data.appID))
-            status.removeProperty (unlockedProp, nullptr);
-
-        if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
-            status.removeProperty (unlockedProp, nullptr);
-    }
+    // TODO(lachlan):
+    // 1. replace `doesProductIDMatch` with `validateJwtToken`, which sends
+    //    a request....
+    // 2. conditionally renew the token if the expiryTime is approaching
+    // if (! doesProductIDMatch (data.appID))
+    //     status.removeProperty (unlockedProp, nullptr);
+    //
+    // if (! machineNumberAllowed (data.machineNumbers, localMachineNums))
+    //     status.removeProperty (unlockedProp, nullptr);
 }
 
 void OnlineUnlockStatus::save()
