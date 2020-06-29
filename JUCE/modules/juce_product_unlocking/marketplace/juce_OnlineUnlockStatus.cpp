@@ -180,6 +180,20 @@ struct KeyFileUtils
     }
 };
 
+struct JwtUtils
+{
+    static String getEmail(var jwt)         { return jwt["user"]["data"]["user_email"].toString(); }
+    static String getActualToken(var jwt)   { return jwt["jwt"]["token"].toString(); }
+    static bool containsValidToken(var jwt)
+    {
+        return getEmail(jwt).isNotEmpty() && getActualToken(jwt).isNotEmpty();
+    }
+
+    static int getTokenExpires(var jwt) {
+        // TODO(lachlan): make this the right format in milliseconds
+        return (int) jwt["jwt"]["token_expires"];
+    }
+};
 
 //==============================================================================
 #if JUCE_MODULE_AVAILABLE_juce_data_structures
@@ -346,18 +360,28 @@ String OnlineUnlockStatus::getUserEmail() const
 
 bool OnlineUnlockStatus::applyJwtToken (var token)
 {
-  // NB: setting this property on the `status` ValueTree, which stores it I'm
-  // fairly sure...
-  setUserEmail(token["user"]["user_email"]);
-  status.setProperty(keyfileDataProp, token["jwt"]["token"], nullptr);
-  status.removeProperty(unlockedProp, nullptr);
+    setUserEmail(JwtUtils::getEmail(token));
+    status.setProperty(keyfileDataProp, JwtUtils::getActualToken(token), nullptr);
+    status.removeProperty(unlockedProp, nullptr);
 
-  // TODO(lachlan): this looks like it should be more obfuscated.
-  var actualResult (true);
+    // NOTE(lachlan): this obfuscation code is copied from `applyKeyFile` below.
+    // Probably not necessary. Does it actually make harder to backwards
+    // engineer? Note we're not using MachineIDs anywhere to verify now.
+    var actualResult (0), dummyResult (1.0);
+    var v (JwtUtils::containsValidToken(token));
+    actualResult.swapWith (v);
+    v = (var) false;
+    dummyResult.swapWith (v);
+    jassert (! dummyResult);
 
-  status.setProperty(unlockedProp, actualResult, nullptr);
+    // jwt always expires
+    if ((! dummyResult) && actualResult) {
+        status.setProperty(expiryTimeProp, JwtUtils::getTokenExpires(token), nullptr);
+        status.setProperty (unlockedProp, actualResult, nullptr);
+        return getExpiryTime().toMilliseconds() > 0;
+    }
 
-  return isUnlocked();
+    return false;
 }
 
 bool OnlineUnlockStatus::applyKeyFile (String keyFileContent)
@@ -446,17 +470,12 @@ OnlineUnlockStatus::UnlockResult OnlineUnlockStatus::handleJsonReply (var json)
 {
     UnlockResult r;
 
-    // TODO(lachlan): error handling
-    String token = json["jwt"]["token"];
-    var userData = json["user"]["data"];
-    String userEmail = userData["user_email"];
-    // TODO(lachlan): potentially more checks regarding roles
-    if (token.isEmpty() || userEmail.isEmpty()) {
+    if (!JwtUtils::containsValidToken(json)) {
       String errcode = json["code"];
       r.succeeded = false;
       r.errorMessage = "Incorrect username/password combination.";
     } else {
-      r.succeeded = token.length() > 10 && applyJwtToken (json);
+      r.succeeded = applyJwtToken (json);
     }
     return r;
 }
