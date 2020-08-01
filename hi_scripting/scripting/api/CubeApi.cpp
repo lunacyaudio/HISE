@@ -67,12 +67,12 @@ void CubeApi::addPathKeyframe(int axis, float time, float pos,
     if (orbitAxis == nullptr) {
         return;
     }
-    orbitAxis->path.keyframes.push_back({
-        .time = time,
-        .pos = pos,
-        .easeIn = easeIn,
-        .easeOut = easeOut
-    });
+    Orbit::Path::Keyframe keyframe;
+    keyframe.time = time;
+    keyframe.pos = pos;
+    keyframe.easeIn = easeIn;
+    keyframe.easeOut = easeOut;
+    orbitAxis->path.keyframes.push_back(keyframe);
 }
 
 void CubeApi::setOrbitRotation(float x, float y, float z) {
