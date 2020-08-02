@@ -31,6 +31,7 @@ OpenGLAppComponent::OpenGLAppComponent()
 {
     setOpaque (true);
     openGLContext.setRenderer (this);
+    openGLContext.setMultisamplingEnabled(true);
     openGLContext.attachTo (*this);
     openGLContext.setContinuousRepainting (true);
 }
