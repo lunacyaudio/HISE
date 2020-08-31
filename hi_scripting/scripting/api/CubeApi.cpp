@@ -9,12 +9,28 @@ void CubeApi::setOrbPosition(float x, float y, float z) {
     orb.z = z;
 }
 
+Array<var> CubeApi::getOrbPosition() {
+    Array<var> orbPosition;
+    orbPosition.add(orb.x);
+    orbPosition.add(orb.y);
+    orbPosition.add(orb.z);
+    return orbPosition;
+}
+
 void CubeApi::showOrbit() {
     orbit.visible = true;
 }
 
 void CubeApi::hideOrbit() {
     orbit.visible = false;
+}
+
+void CubeApi::enableDragging() {
+    orbit.draggingEnabled = true;
+}
+
+void CubeApi::disableDragging() {
+    orbit.draggingEnabled = false;
 }
 
 void CubeApi::setLfo(int axis, String waveType, float frequency,
