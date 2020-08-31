@@ -37,6 +37,7 @@ struct Orbit {
     };
 
     bool visible = false;
+    bool draggingEnabled = false;
     Axis x;
     Axis y;
     Axis z;
@@ -56,8 +57,11 @@ public:
 
     CubeApi() : ApiClass(0) {
 		ADD_API_METHOD_3(setOrbPosition);
+        ADD_API_METHOD_0(getOrbPosition);
         ADD_API_METHOD_0(showOrbit);
         ADD_API_METHOD_0(hideOrbit);
+        ADD_API_METHOD_0(enableDragging);
+        ADD_API_METHOD_0(disableDragging);
         ADD_API_METHOD_4(setLfo);
         ADD_API_METHOD_3(setLfoRange);
         ADD_API_METHOD_1(setEmptyPath);
@@ -69,8 +73,11 @@ public:
 
 	struct Wrapper {
 		API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
+        API_METHOD_WRAPPER_0(CubeApi, getOrbPosition);
         API_VOID_METHOD_WRAPPER_0(CubeApi, showOrbit);
         API_VOID_METHOD_WRAPPER_0(CubeApi, hideOrbit);
+        API_VOID_METHOD_WRAPPER_0(CubeApi, enableDragging);
+        API_VOID_METHOD_WRAPPER_0(CubeApi, disableDragging);
         API_VOID_METHOD_WRAPPER_4(CubeApi, setLfo);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setLfoRange);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEmptyPath);
@@ -81,6 +88,7 @@ public:
 	};
 
     void setOrbPosition(float x, float y, float z);
+    Array<var> getOrbPosition();
     void showOrbit();
     void hideOrbit();
     void setLfo(int axis, String waveType, float frequency, float phaseOffset);
@@ -90,6 +98,8 @@ public:
     void setOrbitRotation(float x, float y, float z);
     void setOrbitMirror(bool x, bool y, bool z);
     void setOrbitIntensity(float intensity);
+    void enableDragging();
+    void disableDragging();
 
 	Identifier getName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
     ~CubeApi() {};
