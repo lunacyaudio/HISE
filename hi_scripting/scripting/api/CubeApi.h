@@ -46,30 +46,30 @@ struct Orbit {
     float intensity = 1;
 };
 
+struct Cube {
+    Orb orb = {};
+    Orbit orbit = {};
+};
+
 using namespace hise;
 
 // The Cube Javascript API.
-class CubeApi : public ApiClass
+class CubeApi : public ApiClass, public ScriptingObject
 {
 public:
-    static Orb orb;
-    static Orbit orbit;
+    // Returns the Cube data associated with this MainController instance.
+    // Note: there may be multiple instances of running multiple Cubes at once
+    // in a DAW.
+    static Cube& getCubeData(const MainController* mc) {
+        if (cubes.find(mc) == cubes.end()) {
+            cubes[mc] = {};
+        }
+        return cubes[mc];
+    }
 
-    CubeApi() : ApiClass(0) {
-		ADD_API_METHOD_3(setOrbPosition);
-        ADD_API_METHOD_0(getOrbPosition);
-        ADD_API_METHOD_0(showOrbit);
-        ADD_API_METHOD_0(hideOrbit);
-        ADD_API_METHOD_0(enableDragging);
-        ADD_API_METHOD_0(disableDragging);
-        ADD_API_METHOD_4(setLfo);
-        ADD_API_METHOD_3(setLfoRange);
-        ADD_API_METHOD_1(setEmptyPath);
-        ADD_API_METHOD_5(addPathKeyframe);
-        ADD_API_METHOD_3(setOrbitRotation);
-        ADD_API_METHOD_3(setOrbitMirror);
-        ADD_API_METHOD_1(setOrbitIntensity);
-	}
+    CubeApi(ProcessorWithScriptingContent *p);
+
+    ~CubeApi();
 
 	struct Wrapper {
 		API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
@@ -102,10 +102,14 @@ public:
     void disableDragging();
 
 	Identifier getName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
-    ~CubeApi() {};
+    static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
 
 private:
+    static std::map<const MainController*, Cube> cubes;
+
     Orbit::Axis* getAxis(int axis);
+
+    Cube& getCubeData();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CubeApi);
 };

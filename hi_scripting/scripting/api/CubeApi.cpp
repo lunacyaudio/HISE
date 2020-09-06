@@ -1,36 +1,60 @@
 namespace cube {
 
-Orb CubeApi::orb = {};
-Orbit CubeApi::orbit = {};
+std::map<const MainController*, Cube> CubeApi::cubes = {};
+
+CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
+        ScriptingObject(p), ApiClass(0) {
+    ADD_API_METHOD_3(setOrbPosition);
+    ADD_API_METHOD_0(getOrbPosition);
+    ADD_API_METHOD_0(showOrbit);
+    ADD_API_METHOD_0(hideOrbit);
+    ADD_API_METHOD_0(enableDragging);
+    ADD_API_METHOD_0(disableDragging);
+    ADD_API_METHOD_4(setLfo);
+    ADD_API_METHOD_3(setLfoRange);
+    ADD_API_METHOD_1(setEmptyPath);
+    ADD_API_METHOD_5(addPathKeyframe);
+    ADD_API_METHOD_3(setOrbitRotation);
+    ADD_API_METHOD_3(setOrbitMirror);
+    ADD_API_METHOD_1(setOrbitIntensity);
+}
+
+CubeApi::~CubeApi() {}
 
 void CubeApi::setOrbPosition(float x, float y, float z) {
-    orb.x = x;
-    orb.y = y;
-    orb.z = z;
+    Cube& cube = getCubeData();
+    cube.orb.x = x;
+    cube.orb.y = y;
+    cube.orb.z = z;
 }
 
 Array<var> CubeApi::getOrbPosition() {
+    Cube& cube = getCubeData();
     Array<var> orbPosition;
-    orbPosition.add(orb.x);
-    orbPosition.add(orb.y);
-    orbPosition.add(orb.z);
+    orbPosition.add(cube.orb.x);
+    orbPosition.add(cube.orb.y);
+    orbPosition.add(cube.orb.z);
     return orbPosition;
 }
 
 void CubeApi::showOrbit() {
-    orbit.visible = true;
+    Cube& cube = getCubeData();
+    cube.orbit.visible = true;
 }
 
 void CubeApi::hideOrbit() {
-    orbit.visible = false;
+    Cube& cube = getCubeData();
+    cube.orbit.visible = false;
 }
 
 void CubeApi::enableDragging() {
-    orbit.draggingEnabled = true;
+    Cube& cube = getCubeData();
+    cube.orbit.draggingEnabled = true;
 }
 
 void CubeApi::disableDragging() {
-    orbit.draggingEnabled = false;
+    Cube& cube = getCubeData();
+    cube.orbit.draggingEnabled = false;
 }
 
 void CubeApi::setLfo(int axis, String waveType, float frequency,
@@ -92,32 +116,40 @@ void CubeApi::addPathKeyframe(int axis, float time, float pos,
 }
 
 void CubeApi::setOrbitRotation(float x, float y, float z) {
-    orbit.rotation.x = x;
-    orbit.rotation.y = y;
-    orbit.rotation.z = z;
+    Cube& cube = getCubeData();
+    cube.orbit.rotation.x = x;
+    cube.orbit.rotation.y = y;
+    cube.orbit.rotation.z = z;
 }
 
 void CubeApi::setOrbitMirror(bool x, bool y, bool z) {
-    orbit.mirror.x = x;
-    orbit.mirror.y = y;
-    orbit.mirror.z = z;
+    Cube& cube = getCubeData();
+    cube.orbit.mirror.x = x;
+    cube.orbit.mirror.y = y;
+    cube.orbit.mirror.z = z;
 }
 
 void CubeApi::setOrbitIntensity(float intensity) {
-    orbit.intensity = intensity;
+    Cube& cube = getCubeData();
+    cube.orbit.intensity = intensity;
 }
 
 Orbit::Axis* CubeApi::getAxis(int axis) {
+    Cube& cube = getCubeData();
     if (axis == 0) {
-        return &orbit.x;
+        return &(cube.orbit.x);
     } else if (axis == 1) {
-        return &orbit.y;
+        return &(cube.orbit.y);
     } else if (axis == 2) {
-        return &orbit.z;
+        return &(cube.orbit.z);
     } else {
         std::cout << "Invalid orbit axis: " << axis << std::endl;
         return nullptr;
     }
+}
+
+Cube& CubeApi::getCubeData() {
+    return getCubeData(getScriptProcessor()->getMainController_());
 }
 
 }  // namespace cube
