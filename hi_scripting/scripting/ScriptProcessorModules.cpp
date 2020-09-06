@@ -195,7 +195,7 @@ void JavascriptMidiProcessor::registerApiClasses()
     scriptEngine->registerNativeObject("Libraries", new DspFactory::LibraryLoader(this));
     scriptEngine->registerNativeObject("Buffer", new VariantBuffer::Factory(64));
     
-	scriptEngine->registerApiClass(new cube::CubeApi());
+	scriptEngine->registerApiClass(new cube::CubeApi(this));
 }
 
 
