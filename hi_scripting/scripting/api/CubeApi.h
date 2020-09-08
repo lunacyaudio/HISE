@@ -3,10 +3,14 @@
 
 namespace cube {
 
+using namespace hise;
+
 struct Orb {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
+    float rippleAmount = 1.0f;
+    float wiggleAmount = 1.0f;
 };
 
 struct Orbit {
@@ -49,9 +53,10 @@ struct Orbit {
 struct Cube {
     Orb orb = {};
     Orbit orbit = {};
+    std::map<String, var> cornerData = {};
+    std::function<void(String, String)> cornerButtonCallback =
+        [](String id, String button) {};
 };
-
-using namespace hise;
 
 // The Cube Javascript API.
 class CubeApi : public ApiClass, public ScriptingObject
@@ -85,6 +90,10 @@ public:
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitRotation);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitMirror);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setRippleAmount);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setWiggleAmount);
+        API_VOID_METHOD_WRAPPER_2(CubeApi, setCornerData);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setCornerButtonCallback);
 	};
 
     void setOrbPosition(float x, float y, float z);
@@ -100,6 +109,10 @@ public:
     void setOrbitIntensity(float intensity);
     void enableDragging();
     void disableDragging();
+    void setRippleAmount(float rippleAmount);
+    void setWiggleAmount(float wiggleAmount);
+    void setCornerData(String id, var data);
+    void setCornerButtonCallback(var callback);
 
 	Identifier getName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
     static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
