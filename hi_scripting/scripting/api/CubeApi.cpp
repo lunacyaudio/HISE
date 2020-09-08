@@ -17,6 +17,10 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
     ADD_API_METHOD_3(setOrbitRotation);
     ADD_API_METHOD_3(setOrbitMirror);
     ADD_API_METHOD_1(setOrbitIntensity);
+    ADD_API_METHOD_1(setRippleAmount);
+    ADD_API_METHOD_1(setWiggleAmount);
+    ADD_API_METHOD_2(setCornerData);
+    ADD_API_METHOD_1(setCornerButtonCallback);
 }
 
 CubeApi::~CubeApi() {}
@@ -132,6 +136,44 @@ void CubeApi::setOrbitMirror(bool x, bool y, bool z) {
 void CubeApi::setOrbitIntensity(float intensity) {
     Cube& cube = getCubeData();
     cube.orbit.intensity = intensity;
+}
+
+void CubeApi::setRippleAmount(float rippleAmount) {
+    Cube& cube = getCubeData();
+    cube.orb.rippleAmount = rippleAmount;
+}
+
+void CubeApi::setWiggleAmount(float wiggleAmount) {
+    Cube& cube = getCubeData();
+    cube.orb.wiggleAmount = wiggleAmount;
+}
+
+void CubeApi::setCornerData(String id, var data) {
+    Cube& cube = getCubeData();
+    cube.cornerData[id] = data;
+}
+
+void CubeApi::setCornerButtonCallback(var callback) {
+    if (!HiseJavascriptEngine::isJavascriptFunction(callback)) {
+        return;
+    }
+
+    auto* engine = dynamic_cast<JavascriptMidiProcessor*>(
+        getScriptProcessor())->getScriptEngine();
+    if (engine == nullptr) {
+        return;
+    }
+
+    Cube& cube = getCubeData();
+    cube.cornerButtonCallback =
+        [this, engine, callback](String id, String button) {
+            var thisObject(this);
+            var data[2] = { var(id), var(button) };
+            var::NativeFunctionArgs args(thisObject, data, 2);
+            Result result = Result::ok();
+            engine->maximumExecutionTime = RelativeTime(0.5);
+            engine->callExternalFunction(callback, args, &result);
+        };
 }
 
 Orbit::Axis* CubeApi::getAxis(int axis) {
