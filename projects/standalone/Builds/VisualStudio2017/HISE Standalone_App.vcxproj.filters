@@ -1729,6 +1729,9 @@
     <ClCompile Include="..\..\..\..\hi_sampler\hi_sampler.cpp">
       <Filter>JUCE Modules\hi_sampler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\CubeApi.cpp">
+      <Filter>JUCE Modules\hi_scripting\scripting\api</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\DspFactory.cpp">
       <Filter>JUCE Modules\hi_scripting\scripting\api</Filter>
     </ClCompile>
@@ -5897,6 +5900,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\hi_sampler\hi_sampler.h">
       <Filter>JUCE Modules\hi_sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\CubeApi.h">
+      <Filter>JUCE Modules\hi_scripting\scripting\api</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\DspInstance.h">
       <Filter>JUCE Modules\hi_scripting\scripting\api</Filter>
