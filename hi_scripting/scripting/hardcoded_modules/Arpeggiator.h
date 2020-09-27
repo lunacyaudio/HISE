@@ -59,7 +59,9 @@ public:
 		DirectionType,
 		OctaveRange,
 		Shuffle,
-		CurrentStep
+		CurrentStep,
+		KeyRangeLo,
+		KeyRangeHi,
 	};
 
 	enum class Direction
@@ -300,13 +302,13 @@ private:
 		return getSliderValueWithoutDisplay(lengthSliderPack, currentStep) == 0.0f;
 	};
 
-	void createLabel(const String& lName, const String& lContent, ScriptComponent* attachedComponent)
+	void createLabel(const String& name, const String& content, ScriptComponent* attachedComponent)
 	{
 		auto pos = attachedComponent->getPosition();
 
-		auto lengthLabel = Content.addLabel(lName, pos.getX(), pos.getY() - 20);
+		auto lengthLabel = Content.addLabel(name, pos.getX(), pos.getY() - 20);
 
-		lengthLabel->set("text", lContent);
+		lengthLabel->set("text", content);
 		lengthLabel->set("alignment", "left");
 		lengthLabel->set("saveInPreset", false);
 		lengthLabel->set("width", pos.getWidth());
@@ -357,6 +359,9 @@ private:
 	ScriptComboBox mpeStartChannel;
 	ScriptComboBox mpeEndChannel;
 	ScriptButton enableTieNotes;
+	ScriptSlider keyRangeLo;
+	ScriptSlider keyRangeHi;
+
 	ScriptButton sustainHold;
 
 	Range<uint16> lastEventIdRange;
