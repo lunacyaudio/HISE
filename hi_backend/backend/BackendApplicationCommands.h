@@ -153,6 +153,7 @@ public:
 		MenuAddView,
 		MenuDeleteView,
 		MenuRenameView,
+		MenuViewResetLookAndFeel,
         MenuViewSaveCurrentView,
         MenuViewRemoveAllSoloProcessors,
         MenuViewShowAllHiddenProcessors,
@@ -291,6 +292,7 @@ public:
 		static void createScriptVariableDeclaration(CopyPasteTarget *currentCopyPasteTarget);
 		static void recompileAllScripts(BackendRootWindow * bpe);
 		static void toggleFullscreen(BackendRootWindow * bpe);
+		static void resetLookAndFeel(BackendRootWindow* bpe);
 		static void addView(BackendRootWindow *bpe);
 		static void deleteView(BackendRootWindow *bpe);
 		static void saveView(BackendRootWindow *bpe);

@@ -383,6 +383,9 @@ public:
 		void removeMacroControlsFor(Processor *p);
 		void removeMacroControlsFor(Processor *p, Identifier name);
 	
+		bool isMacroEnabledOnFrontend() const { return enableMacroOnFrontend; };
+		void setEnableMacroOnFrontend(bool shouldBeEnabled) { enableMacroOnFrontend = shouldBeEnabled; }
+
 		MidiControllerAutomationHandler *getMidiControlAutomationHandler();;
 		const MidiControllerAutomationHandler *getMidiControlAutomationHandler() const;;
 
@@ -397,6 +400,7 @@ public:
 		ModulatorSynthChain *macroChain;
 		int macroIndexForCurrentLearnMode;
 		int macroIndexForCurrentMidiLearnMode;
+		bool enableMacroOnFrontend = false;
 
 		MidiControllerAutomationHandler midiControllerHandler;
 
@@ -1144,6 +1148,8 @@ public:
 		return &getCurrentFileHandler();
 	}
 
+	AudioPlayHead::CurrentPositionInfo& getPositionInfo() { return lastPosInfo; }
+
 	const FileHandlerBase& getCurrentFileHandler() const
 	{
 		return getSampleManager().getProjectHandler();
@@ -1174,15 +1180,9 @@ public:
 		return &getSampleManager().getProjectHandler().pool->getImagePool();
 	};
 
-	SampleMapPool* getCurrentSampleMapPool()
-	{
-		return &getSampleManager().getProjectHandler().pool->getSampleMapPool();
-	}
+	SampleMapPool* getCurrentSampleMapPool();
 
-	const SampleMapPool* getCurrentSampleMapPool() const
-	{
-		return &getSampleManager().getProjectHandler().pool->getSampleMapPool();
-	}
+	const SampleMapPool* getCurrentSampleMapPool() const;
 
 	MidiFilePool* getCurrentMidiFilePool()
 	{
@@ -1329,6 +1329,8 @@ public:
 	virtual ModulatorSynthChain *getMainSynthChain() = 0;
 
 	virtual const ModulatorSynthChain *getMainSynthChain() const = 0;
+
+	void resetLookAndFeelToDefault(Component* c);
 
 	void setCurrentScriptLookAndFeel(ReferenceCountedObject* newLaf) override;
 

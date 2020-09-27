@@ -296,6 +296,7 @@ public:
 		listeners.removeAllInstancesOf(listenerToRemove);
 	}
 
+	static File getAppDataRoot();
    
 	static File getAppDataDirectory();
 	
@@ -456,6 +457,10 @@ public:
     static void saveUserPreset(ModulatorSynthChain *chain, const String& targetFile=String(), NotificationType notify=sendNotification);
     
 	static ValueTree createUserPreset(ModulatorSynthChain* chain);
+
+	static void addRequiredExpansions(const MainController* mc, ValueTree& preset);
+
+	static StringArray checkRequiredExpansions(MainController* mc, ValueTree& preset);
 
 	static ValueTree createModuleStateTree(ModulatorSynthChain* chain);
 
@@ -739,6 +744,10 @@ struct MessageWithIcon : public Component
         virtual ~LookAndFeelMethods() {};
         
 		virtual void paintMessage(MessageWithIcon& icon, Graphics& g);
+
+		virtual MarkdownLayout::StyleData getAlertWindowMarkdownStyleData();
+
+		virtual Image createIcon(PresetHandler::IconType type);
 	};
 
 	MessageWithIcon(PresetHandler::IconType type, LookAndFeel* laf, const String &message);
