@@ -114,7 +114,7 @@ public:
     void setCornerData(String id, var data);
     void setCornerButtonCallback(var callback);
 
-	Identifier getName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
+	Identifier getObjectName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
     static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
 
 private:
