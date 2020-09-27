@@ -344,7 +344,7 @@ void Arpeggiator::onInit()
 
 	parameterNames.add("Color");
 
-	keyRangeLo = Content.addKnob("KeyRangeLo", 550, 475);
+	keyRangeLo = Content.addKnob("KeyRangeLo", 450, 375);
 
 	keyRangeLo->set("text", "KeyRangeLo");
 	keyRangeLo->set("min", 0);
@@ -354,7 +354,7 @@ void Arpeggiator::onInit()
 
 	parameterNames.add("KeyRangeLo");
 
-	keyRangeHi = Content.addKnob("keyRangeHi", 550, 475);
+	keyRangeHi = Content.addKnob("keyRangeHi", 600, 375);
 
 	keyRangeHi->set("text", "keyRangeHi");
 	keyRangeHi->set("min", 0);
@@ -406,16 +406,14 @@ void Arpeggiator::onNoteOn()
 		Message.ignoreEvent(true);
 
 	// added key range limits
-	if ((int8)Message.getNoteNumber() < (int)keyRangeLo->getValue() || (int8)Message.getNoteNumber() > (int)keyRangeHi->getValue())
-		Message.ignoreEvent(true);
-
-	minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
-
-	addUserHeldKey({(int8)Message.getNoteNumber(), (int8)Message.getChannel()});
-
-	// do not call playNote() if timer is already running
-	if (!is_playing)
-		playNote();
+	if ((int)Message.getNoteNumber() >= (int)keyRangeLo->getValue() && (int)Message.getNoteNumber() <= (int)keyRangeHi->getValue()) {
+		minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
+		addUserHeldKey({(int8)Message.getNoteNumber(), (int8)Message.getChannel()});
+		
+		// do not call playNote() if timer is already running
+		if (!is_playing)
+			playNote();
+	}
 }
 
 void Arpeggiator::onNoteOff()
