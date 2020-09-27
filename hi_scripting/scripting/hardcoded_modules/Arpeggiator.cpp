@@ -333,6 +333,36 @@ void Arpeggiator::onInit()
 	lengthLabel->set("fontStyle", "Bold");
 	lengthLabel->set("editable", false);
 	lengthLabel->set("multiline", false);
+
+	color = Content.addKnob("Color", 600, 450);
+
+	color->set("text", "Color");
+	color->set("min", -12);
+	color->set("max", 12);
+	color->set("stepSize", "1");
+	color->set("middlePosition", 0);
+
+	parameterNames.add("Color");
+
+	keyRangeLo = Content.addKnob("KeyRangeLo", 550, 475);
+
+	keyRangeLo->set("text", "KeyRangeLo");
+	keyRangeLo->set("min", 0);
+	keyRangeLo->set("max", 127);
+	keyRangeLo->set("stepSize", "1");
+	keyRangeLo->set("middlePosition", 60);
+
+	parameterNames.add("KeyRangeLo");
+
+	keyRangeHi = Content.addKnob("keyRangeHi", 550, 475);
+
+	keyRangeHi->set("text", "keyRangeHi");
+	keyRangeHi->set("min", 0);
+	keyRangeHi->set("max", 127);
+	keyRangeHi->set("stepSize", "1");
+	keyRangeHi->set("middlePosition", 60);
+
+	parameterNames.add("keyRangeHi");
 	
 	stepSkipSlider->setValue(1);
 	sequenceComboBox->setValue(1);
@@ -346,6 +376,9 @@ void Arpeggiator::onInit()
 	mpeStartChannel->setValue(2);
 	mpeEndChannel->setValue(16);
 	enableTieNotes->setValue(1);
+	color->setValue(0);
+	keyRangeLo->setValue(0);
+	keyRangeHi->setValue(127);
 
 	velocitySliderPack->setAllValues(127);
 	lengthSliderPack->setAllValues(75);
@@ -370,6 +403,10 @@ void Arpeggiator::onNoteOn()
 	}
 
 	if(killIncomingNotes || mpeMode)
+		Message.ignoreEvent(true);
+
+	// added key range limits
+	if ((int8)Message.getNoteNumber() < (int)keyRangeLo->getValue() || (int8)Message.getNoteNumber() > (int)keyRangeHi->getValue())
 		Message.ignoreEvent(true);
 
 	minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
@@ -710,7 +747,8 @@ int Arpeggiator::sendNoteOn()
 {
 	//const int shuffleTimeStamp = (currentStep % 2 != 0) ? (int)(0.8 * (double)currentNoteLengthInSamples * (double)shuffleSlider->getValue()) : 0;
 
-	const int eventId = Synth.addNoteOn(mpeMode ? currentNote.channel : midiChannel, currentNote.noteNumber, currentVelocity, 0);
+	const int eventId = Synth.addNoteOn(mpeMode ? currentNote.channel : midiChannel, currentNote.noteNumber - (int)color->getValue(), currentVelocity, 0);
+	Synth.addPitchFade(eventId, 0, (int)color->getValue(), 0);
 
 	if (mpeMode)
 	{

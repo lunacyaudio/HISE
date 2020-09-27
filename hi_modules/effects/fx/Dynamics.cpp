@@ -349,7 +349,7 @@ void DynamicsEffect::updateMakeupValues(bool updateLimiter)
 	if (updateLimiter)
 	{
 		if (limiterMakeup)
-			limiterMakeupGain = (float)Decibels::decibelsToGain(limiter.getThresh() * -1.0);
+			limiterMakeupGain = (float)Decibels::decibelsToGain((limiter.getThresh() * -1.0) * 0.2);
 		else
 			limiterMakeupGain = 1.0f;
 	}
@@ -359,7 +359,7 @@ void DynamicsEffect::updateMakeupValues(bool updateLimiter)
 		{
 			auto attenuation = compressor.getThresh();
 			auto ratio = compressor.getRatio();
-			auto gainDb = (1.0 - ratio) * attenuation * -1.0;
+			auto gainDb = (1.0 - ratio) * (attenuation * -1.0) * 0.2;
 
 			compressorMakeupGain = (float)Decibels::decibelsToGain(gainDb);
 		}

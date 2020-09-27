@@ -1352,6 +1352,9 @@
     <ClCompile Include="..\..\..\..\hi_sampler\hi_sampler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\CubeApi.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\DspFactory.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -4594,6 +4597,7 @@
     <ClInclude Include="..\..\..\..\hi_sampler\sampler\SampleImporter.h"/>
     <ClInclude Include="..\..\..\..\hi_sampler\sampler\SfzImporter.h"/>
     <ClInclude Include="..\..\..\..\hi_sampler\hi_sampler.h"/>
+    <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\CubeApi.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\DspInstance.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\libtcc.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptComponentEditBroadcaster.h"/>

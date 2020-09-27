@@ -1203,11 +1203,11 @@ void OverlayMessageBroadcaster::sendOverlayMessage(int newState, const String& n
 	// Just print it on the console
 	Logger::getCurrentLogger()->writeToLog("!" + newCustomMessage);
 #else
+	// REMOVED TO AVOID OVERLAY MESSAGE ON STARTUP
+	// currentState = newState;
+	// customMessage = newCustomMessage;
 
-	currentState = newState;
-	customMessage = newCustomMessage;
-
-	internalUpdater.triggerAsyncUpdate();
+	// internalUpdater.triggerAsyncUpdate();
 #endif
 }
 

@@ -59,7 +59,10 @@ public:
 		Direction,
 		OctaveRange,
 		Shuffle,
-		CurrentStep
+		CurrentStep,
+		Color,
+		KeyRangeLo,
+		KeyRangeHi,
 	};
 
 	enum Direction
@@ -335,6 +338,9 @@ private:
 	ScriptComboBox mpeStartChannel;
 	ScriptComboBox mpeEndChannel;
 	ScriptButton enableTieNotes;
+	ScriptSlider color;
+	ScriptSlider keyRangeLo;
+	ScriptSlider keyRangeHi;
 
 	int mpeStart = 2;
 	int mpeEnd = 16;
