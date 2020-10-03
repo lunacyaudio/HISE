@@ -76,6 +76,10 @@ enum MissingOpenGLDefinitions
     GL_FRAMEBUFFER_COMPLETE         = 0x8CD5,
    #endif
 
+   #ifndef GL_FRAMEBUFFER_SRGB
+    GL_FRAMEBUFFER_SRGB             = 0x8DB9,
+   #endif
+
    #ifndef GL_RENDERBUFFER
     GL_RENDERBUFFER                 = 0x8D41,
    #endif
