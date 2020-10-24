@@ -394,15 +394,15 @@ void SamplerSoundWaveform::drawSampleStartBar(Graphics &g)
 {
 	if (sampleStartPosition != -1.0)
 	{
-		g.setColour(Colours::darkblue.withAlpha(0.5f));
+		// g.setColour(Colours::darkblue.withAlpha(0.5f));
 
-		const int x = areas[PlayArea]->getX() + (int)(sampleStartPosition * areas[SampleStartArea]->getWidth());
+		// const int x = areas[PlayArea]->getX() + (int)(sampleStartPosition * areas[SampleStartArea]->getWidth());
 
-		g.drawLine((float)x, 0.0f, (float)x, (float)getBottom() - 2.0f, 1.0f);
+		// g.drawLine((float)x, 0.0f, (float)x, (float)getBottom() - 2.0f, 1.0f);
 
-		g.setColour(Colours::blue.withAlpha(0.1f));
+		// g.setColour(Colours::blue.withAlpha(0.1f));
 
-		g.fillRect(jmax<int>(0, x - 5), 0, 10, getHeight());
+		// g.fillRect(jmax<int>(0, x - 5), 0, 10, getHeight());
 	}
 }
 

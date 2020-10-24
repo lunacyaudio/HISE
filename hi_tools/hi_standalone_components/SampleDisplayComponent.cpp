@@ -1007,7 +1007,12 @@ void HiseAudioThumbnail::drawSection(Graphics &g, bool enabled)
 	}
 	else
 	{
-		g.setColour(fillColour.withAlpha(0.08f));
+		// g.setColour(fillColour.withAlpha(0.08f));
+		g.setGradientFill(ColourGradient(Colour(0xFFF48272),
+			0.0f, 0.0f,
+			Colour(0xFF6D64A6),
+			(float)getWidth(), (float)getHeight(),
+			false));
 
 		int h = getHeight()/2;
 
@@ -1019,7 +1024,13 @@ void HiseAudioThumbnail::drawSection(Graphics &g, bool enabled)
 			g.drawHorizontalLine(h + 3 * h / 4, 0.0f, (float)getWidth());
 		}
 
-		g.setColour(fillColour);
+		// g.setColour(fillColour);
+		g.setGradientFill(ColourGradient(Colour(0xFFF48272),
+			0.0f, 0.0f,
+			Colour(0xFF6D64A6),
+			(float)getWidth(), (float)getHeight(),
+			false));
+
 
 		if (!leftWaveform.isEmpty() || !rightWaveform.isEmpty())
 		{
@@ -1034,7 +1045,12 @@ void HiseAudioThumbnail::drawSection(Graphics &g, bool enabled)
 
 		if (!outlineColour.isTransparent())
 		{
-			g.setColour(outlineColour);
+			// g.setColour(outlineColour);
+			g.setGradientFill(ColourGradient(Colour(0xFFF48272),
+				0.0f, 0.0f,
+				Colour(0xFF6D64A6),
+				(float)getWidth(), (float)getHeight(),
+				false));
 			g.strokePath(leftWaveform, PathStrokeType(1.0f));
 			g.strokePath(rightWaveform, PathStrokeType(1.0f));
 		}
