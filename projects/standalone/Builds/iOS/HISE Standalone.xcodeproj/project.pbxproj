@@ -281,6 +281,50 @@
 			isa = PBXBuildFile;
 			fileRef = 3F404F0A9B997A668ED5F8B4;
 		};
+		07BD75202F6CDFCB9A21110F = {
+			isa = PBXBuildFile;
+			fileRef = 11B10AFD83A987D9D74961E7;
+		};
+		37CCE15DDBD1996CEB680782 = {
+			isa = PBXBuildFile;
+			fileRef = 1C29212958385669F46693AF;
+		};
+		38AF8D2F437E661987912D07 = {
+			isa = PBXBuildFile;
+			fileRef = 9D22FF5171F30C1768AFF879;
+		};
+		76AF2E7EB62A74DE5D07B061 = {
+			isa = PBXBuildFile;
+			fileRef = 3F32E1476518480FF38E48C8;
+		};
+		F1A16965089E43A47223270E = {
+			isa = PBXBuildFile;
+			fileRef = C13659FD39DDD5B45E4C0178;
+		};
+		4C041E42D00E8671E31DCAEC = {
+			isa = PBXBuildFile;
+			fileRef = 3C928026347785D34F739A4C;
+		};
+		20B3D6358E0516968DAA301C = {
+			isa = PBXBuildFile;
+			fileRef = 84C5A8885F3EAB89A8386C77;
+		};
+		6187455031A4FE81D3F400F5 = {
+			isa = PBXBuildFile;
+			fileRef = 12DDB21A75D8D3521954A79C;
+		};
+		5764B02A6EA0933EDBFBC9DE = {
+			isa = PBXBuildFile;
+			fileRef = D76691F21B0D9CD0E79A4DA5;
+		};
+		96D97DFDC0CEEFF96A719235 = {
+			isa = PBXBuildFile;
+			fileRef = F4EC84BE00E09175DF1CBB4C;
+		};
+		1EC75D13C87841D9E63FFB4C = {
+			isa = PBXBuildFile;
+			fileRef = F12A81DA3BDE9E6506C5A4ED;
+		};
 		07D5F515A16078A5965F0DCC = {
 			isa = PBXBuildFile;
 			fileRef = 451658BF9814AC5A7A3D46D6;
@@ -414,6 +458,20 @@
 			path = "../../JuceLibraryCode/include_hi_snex_23.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		11B10AFD83A987D9D74961E7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_31.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_31.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		12DDB21A75D8D3521954A79C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_38.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_38.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		13CA25D45056FABAA5122D10 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -468,6 +526,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = "include_hi_snex_04.cpp";
 			path = "../../JuceLibraryCode/include_hi_snex_04.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		1C29212958385669F46693AF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_32.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_32.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		1E1BE32D1A8AE12C5DAACD43 = {
@@ -624,11 +689,25 @@
 			path = "../../JuceLibraryCode/include_hi_dsp.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		3C928026347785D34F739A4C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_36.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_36.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		3D96C418D4632B4D0A591051 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = "include_hi_snex_27.cpp";
 			path = "../../JuceLibraryCode/include_hi_snex_27.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		3F32E1476518480FF38E48C8 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_34.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_34.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		3F404F0A9B997A668ED5F8B4 = {
@@ -939,6 +1018,13 @@
 			path = "../../JuceLibraryCode/include_hi_snex_11.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		84C5A8885F3EAB89A8386C77 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_37.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_37.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		85B56BE0D0307438A5C01EF2 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -993,6 +1079,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = "include_hi_snex_08.cpp";
 			path = "../../JuceLibraryCode/include_hi_snex_08.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		9D22FF5171F30C1768AFF879 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_33.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_33.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		A01AD4E4222195A6A0D025BD = {
@@ -1121,6 +1214,13 @@
 			path = "../../JuceLibraryCode/include_hi_snex_28.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C13659FD39DDD5B45E4C0178 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_35.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_35.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		C5C0416F23C8F47C4B143BB1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -1198,6 +1298,13 @@
 			path = "../../JuceLibraryCode/include_juce_graphics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		D76691F21B0D9CD0E79A4DA5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_39.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_39.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		DC34FEB582673B240C156002 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -1254,6 +1361,13 @@
 			path = "../../JuceLibraryCode/include_hi_snex_09.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		F12A81DA3BDE9E6506C5A4ED = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_41.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_41.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		F305F54C215150370175A0E5 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -1273,6 +1387,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = BinaryData.h;
 			path = ../../JuceLibraryCode/BinaryData.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		F4EC84BE00E09175DF1CBB4C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_hi_snex_40.cpp";
+			path = "../../JuceLibraryCode/include_hi_snex_40.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		F5F96D47C5D2BD3344F2EFBA = {
@@ -1446,6 +1567,17 @@
 				BFF90A3E3C167878D71C008F,
 				4DC1E32BB8E427D7938E003F,
 				3F404F0A9B997A668ED5F8B4,
+				11B10AFD83A987D9D74961E7,
+				1C29212958385669F46693AF,
+				9D22FF5171F30C1768AFF879,
+				3F32E1476518480FF38E48C8,
+				C13659FD39DDD5B45E4C0178,
+				3C928026347785D34F739A4C,
+				84C5A8885F3EAB89A8386C77,
+				12DDB21A75D8D3521954A79C,
+				D76691F21B0D9CD0E79A4DA5,
+				F4EC84BE00E09175DF1CBB4C,
+				F12A81DA3BDE9E6506C5A4ED,
 				451658BF9814AC5A7A3D46D6,
 				13CA25D45056FABAA5122D10,
 				556EFEECF3132FA4F45F6B10,
@@ -1807,6 +1939,17 @@
 				E25AA9D8BFEFD42076CABC2E,
 				FAEEFDDD63965A0291A2C176,
 				7A499CB2D212B244110FC12C,
+				07BD75202F6CDFCB9A21110F,
+				37CCE15DDBD1996CEB680782,
+				38AF8D2F437E661987912D07,
+				76AF2E7EB62A74DE5D07B061,
+				F1A16965089E43A47223270E,
+				4C041E42D00E8671E31DCAEC,
+				20B3D6358E0516968DAA301C,
+				6187455031A4FE81D3F400F5,
+				5764B02A6EA0933EDBFBC9DE,
+				96D97DFDC0CEEFF96A719235,
+				1EC75D13C87841D9E63FFB4C,
 				07D5F515A16078A5965F0DCC,
 				983A0A4ECE671B6EBBCA84CA,
 				6B47F0600C1D600B81A867A1,

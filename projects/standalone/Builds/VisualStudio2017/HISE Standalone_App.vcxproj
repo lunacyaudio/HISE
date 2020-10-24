@@ -428,9 +428,6 @@
     <ClCompile Include="..\..\..\..\hi_backend\backend\debug_components\ScriptEditHandler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_backend\backend\debug_components\ScriptWatchTable.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_backend\backend\doc_generators\ApiMarkdownGenerator.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1241,6 +1238,9 @@
     <ClCompile Include="..\..\..\..\hi_modules\synthesisers\synths\GlobalModulatorContainer.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_modules\synthesisers\synths\MacroModulationSource.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_modules\synthesisers\synths\NoiseSynth.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1368,6 +1368,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\ScriptComponentWrappers.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\ScriptExpansion.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_scripting\scripting\api\ScriptingApi.cpp">
@@ -1604,7 +1607,13 @@
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_BaseScope.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_ClassScope.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_CodeGenerator.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_ComplexTypeLibrary.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_FunctionParser.cpp">
@@ -1628,6 +1637,9 @@
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_JitCompiler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_NamespaceHandler.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_Operations.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1649,64 +1661,97 @@
     <ClCompile Include="..\..\..\..\hi_snex\snex_jit\snex_jit_UnitTests.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\arch.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\arch.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\assembler.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\assembler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\codebuilder.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\builder.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\codecompiler.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\callconv.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\codeemitter.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\codeholder.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\codeholder.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\compiler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\constpool.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\constpool.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\cpuinfo.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\cpuinfo.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\func.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\emitter.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\globals.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\func.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\inst.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\globals.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\logging.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\inst.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\operand.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\jitallocator.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\osutils.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\jitruntime.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\regalloc.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\logging.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\runtime.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\operand.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\string.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\osutils.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\utils.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\ralocal.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\vmem.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\rapass.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\base\zone.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\rastack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\string.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\support.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\target.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\type.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\virtmem.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zone.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zonehash.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zonelist.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zonestack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zonetree.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\core\zonevector.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86assembler.cpp">
@@ -1715,13 +1760,19 @@
     <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86builder.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86callconv.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86compiler.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86inst.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86features.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instimpl.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instapi.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instdb.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86internal.cpp">
@@ -1733,10 +1784,7 @@
     <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86operand.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86operand_regs.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86regalloc.cpp">
+    <ClCompile Include="..\..\..\..\hi_snex\src\asmjit\x86\x86rapass.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_snex\hi_snex.cpp">
@@ -1832,6 +1880,39 @@
     <ClCompile Include="..\..\..\..\hi_snex\hi_snex_30.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_31.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_32.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_33.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_34.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_35.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_36.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_37.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_38.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_39.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_40.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_snex\hi_snex_41.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_streaming\hi_streaming\MonolithAudioFormat.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1916,6 +1997,12 @@
     <ClCompile Include="..\..\..\..\hi_tools\hi_rlottie\hi_rlottie.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\AdvancedCodeEditor.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\CodeEditorApiBase.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\DragPoint.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1923,6 +2010,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\SampleDisplayComponent.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\ScriptWatchTable.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\hi_tools\hi_standalone_components\SliderPack.cpp">
@@ -4250,6 +4340,17 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_28.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_29.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_30.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_31.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_32.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_33.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_34.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_35.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_36.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_37.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_38.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_39.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_40.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_hi_snex_41.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_streaming.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_tools.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_hi_zstd_1.cpp"/>
@@ -4286,7 +4387,6 @@
     <ClInclude Include="..\..\..\..\hi_backend\backend\debug_components\ScriptComponentList.h"/>
     <ClInclude Include="..\..\..\..\hi_backend\backend\debug_components\ScriptComponentPropertyPanels.h"/>
     <ClInclude Include="..\..\..\..\hi_backend\backend\debug_components\ScriptEditHandler.h"/>
-    <ClInclude Include="..\..\..\..\hi_backend\backend\debug_components\ScriptWatchTable.h"/>
     <ClInclude Include="..\..\..\..\hi_backend\backend\doc_generators\ApiMarkdownGenerator.h"/>
     <ClInclude Include="..\..\..\..\hi_backend\backend\doc_generators\MenuReferenceGenerator.h"/>
     <ClInclude Include="..\..\..\..\hi_backend\backend\doc_generators\ModuleDocGenerator.h"/>
@@ -4565,6 +4665,7 @@
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\AudioLooper.h"/>
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\ClarinetData.h"/>
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\GlobalModulatorContainer.h"/>
+    <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\MacroModulationSource.h"/>
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\NoiseSynth.h"/>
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\PolyBlep.h"/>
     <ClInclude Include="..\..\..\..\hi_modules\synthesisers\synths\SineSynth.h"/>
@@ -4602,6 +4703,7 @@
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\libtcc.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptComponentEditBroadcaster.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptComponentWrappers.h"/>
+    <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptExpansion.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptingApi.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptingApiContent.h"/>
     <ClInclude Include="..\..\..\..\hi_scripting\scripting\api\ScriptingApiObjects.h"/>
@@ -4683,7 +4785,9 @@
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_AssemblyRegister.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_BaseCompiler.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_BaseScope.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_ClassScope.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_CodeGenerator.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_ComplexTypeLibrary.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_FunctionParser.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_Functions.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_FunctionScope.h"/>
@@ -4691,6 +4795,7 @@
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_JitCallableObject.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_JitCompiledFunctionClass.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_JitCompiler.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_NamespaceHandler.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_Operations.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_OperationsBase.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_OptimizationPasses.h"/>
@@ -4699,46 +4804,63 @@
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_Statements.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_SyntaxTreeWalker.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\snex_jit\snex_jit_TokenIterator.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\arch.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\assembler.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\codebuilder.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\codecompiler.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\codeemitter.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\codeholder.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\constpool.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\cpuinfo.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\func.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\globals.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\inst.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\logging.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\misc_p.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\operand.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\osutils.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\regalloc_p.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\runtime.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\simdtypes.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\string.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\utils.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\vmem.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base\zone.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\arch.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\assembler.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\build.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\builder.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\callconv.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\codebufferwriter_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\codeholder.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\compiler.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\constpool.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\cpuinfo.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\datatypes.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\emitter.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\features.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\func.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\globals.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\inst.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\jitallocator.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\jitruntime.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\logging.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\misc_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\operand.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\osutils.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\raassignment_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\rabuilders_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\radefs_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\ralocal_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\rapass_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\rastack_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\string.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\support.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\target.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\type.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\virtmem.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zone.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonehash.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonelist.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonestack.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonestring.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonetree.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core\zonevector.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86assembler.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86builder.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86callconv_p.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86compiler.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86emitter.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86features.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86globals.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86inst.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instimpl_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instapi_p.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instdb.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86instdb_p.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86internal_p.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86logging_p.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86misc.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86opcode_p.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86operand.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86regalloc_p.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\arm.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86\x86rapass_p.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\asmjit.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\asmjit_apibegin.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\asmjit_apiend.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\asmjit_build.h"/>
-    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\base.h"/>
+    <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\core.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\asmjit\x86.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\surpress_warnings_begin.h"/>
     <ClInclude Include="..\..\..\..\hi_snex\src\surpress_warnings_end.h"/>
@@ -4774,9 +4896,12 @@
     <ClInclude Include="..\..\..\..\hi_tools\hi_rlottie\wrapper\RLottieDevComponent.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_rlottie\wrapper\RLottieManager.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_rlottie\hi_rlottie.h"/>
+    <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\AdvancedCodeEditor.h"/>
+    <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\CodeEditorApiBase.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\DragPoint.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\Plotter.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\SampleDisplayComponent.h"/>
+    <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\ScriptWatchTable.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\SliderPack.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\TableEditor.h"/>
     <ClInclude Include="..\..\..\..\hi_tools\hi_standalone_components\VuMeter.h"/>

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>18F132</string>
+	<string>16G2016</string>
 	<key>CFBundleDisplayName</key>
 	<string>HISE Standalone</string>
 	<key>CFBundleExecutable</key>
@@ -29,19 +29,17 @@
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>11C505</string>
+	<string>9A235</string>
 	<key>DTPlatformVersion</key>
 	<string>GM</string>
 	<key>DTSDKBuild</key>
-	<string>19B90</string>
+	<string>17A360</string>
 	<key>DTSDKName</key>
-	<string>macosx10.15</string>
+	<string>macosx10.13</string>
 	<key>DTXcode</key>
-	<string>1131</string>
+	<string>0900</string>
 	<key>DTXcodeBuild</key>
-	<string>11C505</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.7</string>
+	<string>9A235</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
