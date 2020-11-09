@@ -2661,6 +2661,7 @@ struct ScriptingApi::Content::ScriptPanel::Wrapper
     API_VOID_METHOD_WRAPPER_3(ScriptPanel, setValueWithUndo);
 	API_VOID_METHOD_WRAPPER_1(ScriptPanel, showAsPopup);
 	API_VOID_METHOD_WRAPPER_0(ScriptPanel, closeAsPopup);
+	API_VOID_METHOD_WRAPPER_3(ScriptPanel, setMouseCursor);
 	API_METHOD_WRAPPER_0(ScriptPanel, addChildPanel);
 	API_METHOD_WRAPPER_0(ScriptPanel, removeFromParent);
 	API_METHOD_WRAPPER_0(ScriptPanel, getChildPanelList);
@@ -2716,6 +2717,7 @@ void ScriptingApi::Content::ScriptPanel::init()
 	setDefaultValue(ScriptComponent::Properties::width, 100);
 	setDefaultValue(ScriptComponent::Properties::height, 50);
 	setDefaultValue(ScriptComponent::Properties::saveInPreset, false);
+	setDefaultValue(ScriptComponent::Properties::isPluginParameter, false);
 	setDefaultValue(textColour, 0x23FFFFFF);
 	setDefaultValue(itemColour, 0x30000000);
 	setDefaultValue(itemColour2, 0x30000000);
@@ -2761,7 +2763,7 @@ void ScriptingApi::Content::ScriptPanel::init()
 	ADD_API_METHOD_0(removeFromParent);
 	ADD_API_METHOD_0(getChildPanelList);
 	ADD_API_METHOD_0(getParentPanel);
-
+	ADD_API_METHOD_3(setMouseCursor);
 #if HISE_INCLUDE_RLOTTIE
 	ADD_API_METHOD_0(getAnimationData);
 	ADD_API_METHOD_1(setAnimation);
@@ -2803,13 +2805,24 @@ ScriptCreatedComponentWrapper * ScriptingApi::Content::ScriptPanel::createCompon
 
 void ScriptingApi::Content::ScriptPanel::repaint()
 {
-	internalRepaint(false);
+	auto threadId = getScriptProcessor()->getMainController_()->getKillStateHandler().getCurrentThread();
+
+	if (threadId == MainController::KillStateHandler::SampleLoadingThread ||
+		threadId == MainController::KillStateHandler::ScriptingThread ||
+		threadId == MainController::KillStateHandler::MessageThread)
+	{
+		internalRepaint(false);
+	}
+	else
+	{
+		getScriptProcessor()->getMainController_()->getJavascriptThreadPool().addDeferredPaintJob(this);
+	}
 }
 
 
 void ScriptingApi::Content::ScriptPanel::repaintImmediately()
 {
-	internalRepaint(false);
+	repaint();
 }
 
 
@@ -3161,6 +3174,33 @@ void ScriptingApi::Content::ScriptPanel::setImage(String imageName, int xOffset,
 		drawHandler->addDrawAction(new ScriptedDrawActions::drawImageWithin(img, b.toFloat()));
 		drawHandler->flush();
 	}
+}
+
+void ScriptingApi::Content::ScriptPanel::setMouseCursor(var pathIcon, var colour, var hitPoint)
+ {
+	if (auto po = dynamic_cast<ScriptingObjects::PathObject*>(pathIcon.getObject()))
+	{
+		mouseCursorPath.path = po->getPath();
+		mouseCursorPath.c = ScriptingApi::Content::Helpers::getCleanedObjectColour(colour);
+		
+		if (auto ar = hitPoint.getArray())
+		{
+			if (ar->size() == 2)
+			{
+				mouseCursorPath.hitPoint = Point<float>((float)((*ar)[0]), (float)((*ar)[1]));
+				
+				if (!Rectangle<float>(0.0f, 0.0f, 1.0f, 1.0f).contains(mouseCursorPath.hitPoint))
+					reportScriptError("hitPoint must be within [0, 0, 1, 1] area");
+				
+			}
+			else
+				reportScriptError("hitPoint must be a [x, y] array");
+		}
+		else
+			reportScriptError("hitPoint must be a [x, y] array");
+	}
+	else
+		reportScriptError("pathIcon is not a path");
 }
 
 Rectangle<int> ScriptingApi::Content::ScriptPanel::getBoundsForImage() const
