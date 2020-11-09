@@ -624,6 +624,8 @@ void ScriptingApi::Content::ScriptComponent::AsyncControlCallbackSender::handleA
 
 void ScriptingApi::Content::ScriptComponent::setValue(var controlValue)
 {
+	double d = controlValue;
+
 #if ENABLE_SCRIPTING_SAFE_CHECKS
     
     if (controlValue.isString())
@@ -635,17 +637,20 @@ void ScriptingApi::Content::ScriptComponent::setValue(var controlValue)
     
 	if (!controlValue.isObject())
 	{
+		std::cout << "ScriptComponent: Control value is not object: Set value " << getName().toString() << " " << d << std::endl;
 		value = controlValue;
 		jassert(!std::isnan((float)value));
 	}
 	else if (parent != nullptr)
 	{
+		std::cout << "ScriptComponent: Parent is not null pointer: Set value " << getName().toString() << " " << d << std::endl;
 		ScopedLock sl(parent->lock);
 		value = controlValue;
 	}
 
 	if (parent->allowGuiCreation)
 	{
+		std::cout << "skipping restoring for " << getName().toString() << std::endl;
 		skipRestoring = true;
 	}
 

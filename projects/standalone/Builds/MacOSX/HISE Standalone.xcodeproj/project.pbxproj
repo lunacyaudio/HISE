@@ -1636,9 +1636,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_DEBUG=1",
 					"DEBUG=1",
-					"USE_IPP=1",
-					"HI_ENABLE_EXPANSION_EDITING=1",
-					"HISE_ENABLE_EXPANSIONS=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 					"JUCE_APP_VERSION=2.1.0",
 					"JUCE_APP_VERSION_HEX=0x20100",
@@ -1657,19 +1654,13 @@
 					"../../../../../HISE",
 					"../../../../JUCE/modules",
 					"../../../../stk_wrapper/stk/include",
-					"/opt/intel/ipp/include",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"/opt/intel/ipp/lib\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "-Wno-reorder -Wno-inconsistent-missing-override -mpopcnt";
-				OTHER_LDFLAGS = "/opt/intel/ipp/lib/libippi.a  /opt/intel/ipp/lib/libipps.a /opt/intel/ipp/lib/libippvm.a /opt/intel/ipp/lib/libippcore.a";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hartinstruments.HISEStandalone;
 				PRODUCT_NAME = "HISE Debug";
 				USE_HEADERMAP = NO;
@@ -1692,9 +1683,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_NDEBUG=1",
 					"NDEBUG=1",
-					"USE_IPP=1",
-					"HI_ENABLE_EXPANSION_EDITING=1",
-					"HISE_ENABLE_EXPANSIONS=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 					"JUCE_APP_VERSION=2.1.0",
 					"JUCE_APP_VERSION_HEX=0x20100",
@@ -1714,20 +1702,14 @@
 					"../../../../../HISE",
 					"../../../../JUCE/modules",
 					"../../../../stk_wrapper/stk/include",
-					"/opt/intel/ipp/include",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"/opt/intel/ipp/lib\"",
-				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "-Wno-reorder -Wno-inconsistent-missing-override -mpopcnt";
-				OTHER_LDFLAGS = "/opt/intel/ipp/lib/libippi.a  /opt/intel/ipp/lib/libipps.a /opt/intel/ipp/lib/libippvm.a /opt/intel/ipp/lib/libippcore.a";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hartinstruments.HISEStandalone;
 				PRODUCT_NAME = "HISE";
 				USE_HEADERMAP = NO;
@@ -1750,9 +1732,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_NDEBUG=1",
 					"NDEBUG=1",
-					"USE_IPP=1",
-					"HI_ENABLE_EXPANSION_EDITING=1",
-					"HISE_ENABLE_EXPANSIONS=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 					"JUCE_APP_VERSION=2.1.0",
 					"JUCE_APP_VERSION_HEX=0x20100",
@@ -1772,19 +1751,13 @@
 					"../../../../../HISE",
 					"../../../../JUCE/modules",
 					"../../../../stk_wrapper/stk/include",
-					"/opt/intel/ipp/include",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"/opt/intel/ipp/lib\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CPLUSPLUSFLAGS = "-Wno-reorder -Wno-inconsistent-missing-override -mpopcnt";
-				OTHER_LDFLAGS = "/opt/intel/ipp/lib/libippi.a  /opt/intel/ipp/lib/libipps.a /opt/intel/ipp/lib/libippvm.a /opt/intel/ipp/lib/libippcore.a";
 				PRODUCT_BUNDLE_IDENTIFIER = com.hartinstruments.HISEStandalone;
 				PRODUCT_NAME = "HISE";
 				USE_HEADERMAP = NO;

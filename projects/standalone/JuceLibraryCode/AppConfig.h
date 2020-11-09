@@ -108,7 +108,7 @@
 #endif
 
 #ifndef    USE_IPP
- #define   USE_IPP 1
+ #define   USE_IPP 0
 #endif
 
 #ifndef    USE_VDSP_FFT
@@ -144,7 +144,7 @@
 #endif
 
 #ifndef    USE_GLITCH_DETECTION
- #define   USE_GLITCH_DETECTION 1
+ //#define USE_GLITCH_DETECTION 0
 #endif
 
 #ifndef    ENABLE_PLOTTER
@@ -245,7 +245,7 @@
 // hi_modules flags:
 
 #ifndef    HI_ENABLE_CUSTOM_NODE_LOCATION
- #define   HI_ENABLE_CUSTOM_NODE_LOCATION 0
+ //#define HI_ENABLE_CUSTOM_NODE_LOCATION 0
 #endif
 
 //==============================================================================
@@ -259,7 +259,7 @@
 // hi_snex flags:
 
 #ifndef    HISE_INCLUDE_SNEX
- #define   HISE_INCLUDE_SNEX 1
+ //#define HISE_INCLUDE_SNEX 0
 #endif
 
 //==============================================================================
