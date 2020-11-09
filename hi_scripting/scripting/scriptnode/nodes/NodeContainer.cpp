@@ -1264,15 +1264,8 @@ NodeContainer::MacroParameter::MacroParameter(NodeBase* parentNode, ValueTree da
 			}
 		}
 
-		if (initialised)
 		rebuildCallback();
 	});
-
-	
-	rebuildCallback();
-	initialised = true;
-
-
 }
 
 void NodeContainer::MacroParameter::rebuildCallback()
