@@ -154,7 +154,7 @@ void Arpeggiator::onInit()
 	sequenceComboBox = Content.addComboBox("SequenceComboBox", 10, 410);
 
 	sequenceComboBox->set("text", "Direction");
-	sequenceComboBox->set("items", "Up\nDown\nUp-Down\nDown-Up\nRandom");
+	sequenceComboBox->set("items", "Up\nDown\nUp-Down\nDown-Up\nRandom\nChords");
 
 	parameterNames.add("Direction");
 
@@ -445,6 +445,7 @@ void Arpeggiator::onControl(ScriptingApi::Content::ScriptComponent *c, var value
 	}
 	else if (c == sequenceComboBox)
 	{
+		currentDirection = (Direction)(int)sequenceComboBox->getValue();
 		changeDirection();
 	}
 	else if (c == inputMidiChannel)
@@ -633,7 +634,7 @@ void Arpeggiator::playNote()
 	
 
 	// add semitone offset if enabled
-	if (do_use_step_semitone_offsets) currentNote += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
+	currentNote += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
 
 	// get step velocity
 	currentVelocity = (int)velocitySliderPack->getSliderValueAt(currentStep);
@@ -665,7 +666,7 @@ void Arpeggiator::playNote()
 
 		last_step_was_tied = false;
 
-		const int onId = sendNoteOn();
+		lastEventIdRange = sendNoteOn();
 
 		// add a little bit of time to the note off for a tied step to engage the synth's legato features
 		// only do it if next step is not going to be skipped
@@ -674,7 +675,8 @@ void Arpeggiator::playNote()
 			currentNoteLengthInSamples += minNoteLenSamples;
 		}
 
-		Synth.noteOffDelayedByEventId(onId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
+		for(int i = lastEventIdRange.getStart(); i < lastEventIdRange.getEnd(); i++)
+			Synth.noteOffDelayedByEventId(i, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
 
 		//Synth.addNoteOff(midiChannel, currentNote, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
 	}
@@ -684,9 +686,10 @@ void Arpeggiator::playNote()
 		// if last step was not tied, add new note
 		if (!last_step_was_tied && !curr_step_is_skip())
 		{
-			const int onId = sendNoteOn();
+			lastEventIdRange = sendNoteOn();
 
-			currentlyPlayingEventIds.add(onId);
+			for(int i = lastEventIdRange.getStart(); i < lastEventIdRange.getEnd(); i++)
+				currentlyPlayingEventIds.add(i);
 		}
 
 		last_step_was_tied = false;
@@ -751,13 +754,50 @@ void Arpeggiator::sendNoteOff(int eventId)
 	Synth.noteOffDelayedByEventId(eventId, minNoteLenSamples);
 }
 
-int Arpeggiator::sendNoteOn()
+Range<int> Arpeggiator::sendNoteOn()
 {
-	//const int shuffleTimeStamp = (currentStep % 2 != 0) ? (int)(0.8 * (double)currentNoteLengthInSamples * (double)shuffleSlider->getValue()) : 0;
+	if (currentDirection != Direction::Chord)
+	{
+		auto id = sendNoteOnInternal(currentNote);
 
-	int midiChannelToUse = mpeMode || midiChannel == 0 ? currentNote.channel : midiChannel;
+		return { id, id + 1 };
+	}
+		
+	else
+	{
+		int firstId = -1;
+		int lastId = -1;
 
-	const int eventId = Synth.addNoteOn(midiChannelToUse, currentNote.noteNumber, currentVelocity, 0);
+		for (auto& c : MidiSequenceArraySorted)
+		{
+			c += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
+
+			int thisId = sendNoteOnInternal(c);
+
+			if (firstId == -1)
+				firstId = thisId;
+			else
+			{
+				// Needs to be consecutive...
+				jassert(thisId - lastId == 1);
+			}
+			
+			lastId = thisId;
+		}
+
+		return { firstId, lastId + 1 };
+	}
+}
+
+
+
+
+
+int Arpeggiator::sendNoteOnInternal(const Arpeggiator::NoteWithChannel& c)
+{
+	int midiChannelToUse = mpeMode || midiChannel == 0 ? c.channel : midiChannel;
+
+	const int eventId = Synth.addNoteOn(midiChannelToUse, c.noteNumber, currentVelocity, 0);
 
 	if (mpeMode)
 	{
@@ -765,14 +805,13 @@ int Arpeggiator::sendNoteOn()
 
 		auto timestamp = (int)ce.getTimeStamp();// +shuffleTimeStamp;
 
-		auto c = currentNote.channel;
+		auto ch = c.channel;
 
-		HiseEvent pressValue(HiseEvent::Type::Aftertouch, mpeValues.pressValues[c], 0, c);
-		HiseEvent slideValue(HiseEvent::Type::Controller, 74, mpeValues.slideValues[c], c);
-		HiseEvent glideValue(HiseEvent::Type::PitchBend, 0, 0, c);
-		glideValue.setPitchWheelValue(mpeValues.glideValues[c]);
+		HiseEvent pressValue(HiseEvent::Type::Aftertouch, mpeValues.pressValues[ch], 0, ch);
+		HiseEvent slideValue(HiseEvent::Type::Controller, 74, mpeValues.slideValues[ch], ch);
+		HiseEvent glideValue(HiseEvent::Type::PitchBend, 0, 0, ch);
+		glideValue.setPitchWheelValue(mpeValues.glideValues[ch]);
 
-		
 		slideValue.setTimeStamp(timestamp);
 		glideValue.setTimeStamp(timestamp);
 		pressValue.setTimeStamp(timestamp);
@@ -785,27 +824,28 @@ int Arpeggiator::sendNoteOn()
 	return eventId;
 }
 
+void Arpeggiator::applySliderPackData(NoteWithChannel& c)
+{
 
-
-
+}
 
 void Arpeggiator::changeDirection()
 {
-	switch ((int)sequenceComboBox->getValue())
+	switch (currentDirection)
 	{
-	case enumSeqUP:
+	case Direction::Up:
 		arpDirMod = 1;
 		randomOrder = false;
 		break;
-	case enumSeqDN:
+	case Direction::Down:
 		arpDirMod = -1;
 		randomOrder = false;
 		break;
-	case enumSeqDNUP:
-	case enumSeqUPDN:
+	case Direction::UpDown:
+	case Direction::DownUp:
 		randomOrder = false;
 		break;
-	case enumSeqRND:
+	case Direction::Random:
 		randomOrder = true;
 		break;
 	}
@@ -864,15 +904,15 @@ void Arpeggiator::reset(bool do_all_notes_off, bool do_stop)
 	curMasterStep = 0;
 	currentStepSlider->setValue(0);
 	
-	switch ((int)sequenceComboBox->getValue())
+	switch (currentDirection)
 	{
-	case enumSeqUP:
-	case enumSeqUPDN:
+	case Direction::Up:
+	case Direction::UpDown:
 		arpDirMod = 1;
 		curHeldNoteIdx = 0;
 		break;
-	case enumSeqDN:
-	case enumSeqDNUP:
+	case Direction::Down:
+	case Direction::DownUp:
 		arpDirMod = -1;
 		curHeldNoteIdx = MidiSequenceArray.size() - 1;
 		break;
@@ -899,6 +939,11 @@ void Arpeggiator::start()
 
 void Arpeggiator::stop()
 {
+	for (int i = lastEventIdRange.getStart(); i < lastEventIdRange.getEnd(); i++)
+	{
+		Synth.noteOffByEventId(i);
+	}
+
 	stopCurrentNote();
 
 	Synth.stopTimer();
