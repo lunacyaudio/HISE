@@ -392,7 +392,7 @@ void Arpeggiator::onNoteOn()
 
 		addUserHeldKey(newNote);
 
-		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < 0.02))
+		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000)))
 		{
 			// Here we land if the chord mode has just been started but the
 			// arp is already playing, so we need to manually play the note.
