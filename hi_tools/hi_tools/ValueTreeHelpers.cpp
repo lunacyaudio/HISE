@@ -334,6 +334,8 @@ void ChildListener::sendAddMessageForAllChildren()
 	{
 	case AsyncMode::Unregistered: break;
 	case AsyncMode::Synchronously:
+	{
+		IterationProtector ip(v);
 		for (auto c : v)
 			cb(c, true);
 		break;
