@@ -339,6 +339,7 @@ void ChildListener::sendAddMessageForAllChildren()
 		for (auto c : v)
 			cb(c, true);
 		break;
+	}
 	case AsyncMode::Asynchronously:
 	{
 		ScopedLock sl(asyncLock);
