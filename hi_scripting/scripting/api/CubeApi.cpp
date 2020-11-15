@@ -19,6 +19,7 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
     ADD_API_METHOD_1(setOrbitIntensity);
     ADD_API_METHOD_1(setRippleAmount);
     ADD_API_METHOD_1(setWiggleAmount);
+    ADD_API_METHOD_1(setEther);
     ADD_API_METHOD_2(setCornerData);
     ADD_API_METHOD_1(setCornerButtonCallback);
 }
@@ -146,6 +147,11 @@ void CubeApi::setRippleAmount(float rippleAmount) {
 void CubeApi::setWiggleAmount(float wiggleAmount) {
     Cube& cube = getCubeData();
     cube.orb.wiggleAmount = wiggleAmount;
+}
+
+void CubeApi::setEther(float ether) {
+    Cube& cube = getCubeData();
+    cube.ether = ether;
 }
 
 void CubeApi::setCornerData(String id, var data) {
