@@ -1535,7 +1535,6 @@ Value& Slider::getMaxValueObject() noexcept      { return pimpl->valueMax; }
 
 void Slider::setValue (double newValue, NotificationType notification)
 {
-    std::cout << "Slider set value " << newValue << std::endl;
     pimpl->setValue (newValue, notification);
 }
 
