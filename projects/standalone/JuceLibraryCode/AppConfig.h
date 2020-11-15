@@ -108,7 +108,7 @@
 #endif
 
 #ifndef    USE_IPP
- #define   USE_IPP 1
+ #define   USE_IPP 0
 #endif
 
 #ifndef    USE_VDSP_FFT
@@ -144,7 +144,7 @@
 #endif
 
 #ifndef    USE_GLITCH_DETECTION
- #define   USE_GLITCH_DETECTION 1
+ //#define USE_GLITCH_DETECTION 0
 #endif
 
 #ifndef    ENABLE_PLOTTER
@@ -157,10 +157,6 @@
 
 #ifndef    CRASH_ON_GLITCH
  //#define CRASH_ON_GLITCH 0
-#endif
-
-#ifndef    HISE_ENABLE_EXPANSIONS
- #define   HISE_ENABLE_EXPANSIONS 1
 #endif
 
 #ifndef    ENABLE_SCRIPTING_BREAKPOINTS
@@ -201,6 +197,10 @@
 
 #ifndef    USE_SPLASH_SCREEN
  //#define USE_SPLASH_SCREEN 0
+#endif
+
+#ifndef    HISE_USE_CUSTOM_EXPANSION_TYPE
+ //#define HISE_USE_CUSTOM_EXPANSION_TYPE 0
 #endif
 
 #ifndef    HISE_SAMPLE_DIALOG_SHOW_INSTALL_BUTTON
@@ -245,7 +245,7 @@
 // hi_modules flags:
 
 #ifndef    HI_ENABLE_CUSTOM_NODE_LOCATION
- #define   HI_ENABLE_CUSTOM_NODE_LOCATION 0
+ //#define HI_ENABLE_CUSTOM_NODE_LOCATION 0
 #endif
 
 //==============================================================================
@@ -259,7 +259,7 @@
 // hi_snex flags:
 
 #ifndef    HISE_INCLUDE_SNEX
- #define   HISE_INCLUDE_SNEX 1
+ //#define HISE_INCLUDE_SNEX 0
 #endif
 
 //==============================================================================

@@ -238,7 +238,7 @@ void FFTDisplayBase::drawSpectrum(Graphics& g)
 	auto asComponent = dynamic_cast<Component*>(this);
 	g.setColour(Colours::grey);
 	g.setFont(GLOBAL_BOLD_FONT());
-	g.drawText("You need IPP for the FFT Analyser", asComponent->getLocalBounds().toFloat(), Justification::centred, false);
+	// g.drawText("You need IPP for the FFT Analyser", asComponent->getLocalBounds().toFloat(), Justification::centred, false);
 
 #endif
 }
@@ -553,8 +553,8 @@ void FilterDragOverlay::fillPopupMenu(PopupMenu& m, int handleIndex)
 	else
 	{
 		m.addItem(1, "Delete all bands", true, false);
-		m.addItem(2, "Enable Spectrum Analyser", true, eq->getFFTBuffer().isActive());
-		m.addItem(3, "Cancel");
+		// m.addItem(2, "Enable Spectrum Analyser", true, eq->getFFTBuffer().isActive());
+		m.addItem(2, "Cancel");
 	}
 
 	
@@ -603,7 +603,7 @@ void FilterDragOverlay::popupMenuAction(int result, int handleIndex)
 	}
 	else
 	{
-		if (result == 3)
+		if (result == 2)
 			return;
 
 		if (result == 1)
@@ -611,8 +611,8 @@ void FilterDragOverlay::popupMenuAction(int result, int handleIndex)
 			while (eq->getNumFilterBands() > 0)
 				eq->removeFilterBand(0);
 		}
-		else if (result == 2)
-			eq->enableSpectrumAnalyser(!eq->getFFTBuffer().isActive());
+		// else if (result == 2)
+		// 	eq->enableSpectrumAnalyser(!eq->getFFTBuffer().isActive());
 	}
 }
 

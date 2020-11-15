@@ -141,6 +141,17 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/include_hi_snex_28_4b295b79.o \
   $(JUCE_OBJDIR)/include_hi_snex_29_4b3772fa.o \
   $(JUCE_OBJDIR)/include_hi_snex_30_4c6d7810.o \
+  $(JUCE_OBJDIR)/include_hi_snex_31_4c7b8f91.o \
+  $(JUCE_OBJDIR)/include_hi_snex_32_4c89a712.o \
+  $(JUCE_OBJDIR)/include_hi_snex_33_4c97be93.o \
+  $(JUCE_OBJDIR)/include_hi_snex_34_4ca5d614.o \
+  $(JUCE_OBJDIR)/include_hi_snex_35_4cb3ed95.o \
+  $(JUCE_OBJDIR)/include_hi_snex_36_4cc20516.o \
+  $(JUCE_OBJDIR)/include_hi_snex_37_4cd01c97.o \
+  $(JUCE_OBJDIR)/include_hi_snex_38_4cde3418.o \
+  $(JUCE_OBJDIR)/include_hi_snex_39_4cec4b99.o \
+  $(JUCE_OBJDIR)/include_hi_snex_40_4e2250af.o \
+  $(JUCE_OBJDIR)/include_hi_snex_41_4e306830.o \
   $(JUCE_OBJDIR)/include_hi_streaming_6963df44.o \
   $(JUCE_OBJDIR)/include_hi_tools_3ba2cabd.o \
   $(JUCE_OBJDIR)/include_hi_zstd_1_81a60803.o \
@@ -434,6 +445,61 @@ $(JUCE_OBJDIR)/include_hi_snex_29_4b3772fa.o: ../../JuceLibraryCode/include_hi_s
 $(JUCE_OBJDIR)/include_hi_snex_30_4c6d7810.o: ../../JuceLibraryCode/include_hi_snex_30.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling include_hi_snex_30.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_31_4c7b8f91.o: ../../JuceLibraryCode/include_hi_snex_31.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_31.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_32_4c89a712.o: ../../JuceLibraryCode/include_hi_snex_32.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_32.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_33_4c97be93.o: ../../JuceLibraryCode/include_hi_snex_33.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_33.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_34_4ca5d614.o: ../../JuceLibraryCode/include_hi_snex_34.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_34.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_35_4cb3ed95.o: ../../JuceLibraryCode/include_hi_snex_35.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_35.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_36_4cc20516.o: ../../JuceLibraryCode/include_hi_snex_36.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_36.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_37_4cd01c97.o: ../../JuceLibraryCode/include_hi_snex_37.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_37.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_38_4cde3418.o: ../../JuceLibraryCode/include_hi_snex_38.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_38.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_39_4cec4b99.o: ../../JuceLibraryCode/include_hi_snex_39.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_39.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_40_4e2250af.o: ../../JuceLibraryCode/include_hi_snex_40.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_40.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_hi_snex_41_4e306830.o: ../../JuceLibraryCode/include_hi_snex_41.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling include_hi_snex_41.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_hi_streaming_6963df44.o: ../../JuceLibraryCode/include_hi_streaming.cpp
