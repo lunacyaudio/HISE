@@ -53,6 +53,7 @@ struct Orbit {
 struct Cube {
     Orb orb = {};
     Orbit orbit = {};
+    float ether = 0;
     std::map<String, var> cornerData = {};
     std::function<void(String, String)> cornerButtonCallback =
         [](String id, String button) {};
@@ -92,6 +93,7 @@ public:
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setRippleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setWiggleAmount);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setEther);
         API_VOID_METHOD_WRAPPER_2(CubeApi, setCornerData);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setCornerButtonCallback);
 	};
@@ -111,6 +113,7 @@ public:
     void disableDragging();
     void setRippleAmount(float rippleAmount);
     void setWiggleAmount(float wiggleAmount);
+    void setEther(float ether);
     void setCornerData(String id, var data);
     void setCornerButtonCallback(var callback);
 
