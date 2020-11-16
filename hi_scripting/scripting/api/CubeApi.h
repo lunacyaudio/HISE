@@ -11,6 +11,9 @@ struct Orb {
     float z = 0.0f;
     float rippleAmount = 1.0f;
     float wiggleAmount = 1.0f;
+
+    // Normalized time within the orbit, between 0 and 1.
+    float orbitTime = 0.0f;
 };
 
 struct Orbit {
@@ -79,6 +82,7 @@ public:
 
 	struct Wrapper {
 		API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbTime);
         API_METHOD_WRAPPER_0(CubeApi, getOrbPosition);
         API_VOID_METHOD_WRAPPER_0(CubeApi, showOrbit);
         API_VOID_METHOD_WRAPPER_0(CubeApi, hideOrbit);
@@ -99,6 +103,7 @@ public:
 	};
 
     void setOrbPosition(float x, float y, float z);
+    void setOrbTime(float t);
     Array<var> getOrbPosition();
     void showOrbit();
     void hideOrbit();
