@@ -5,6 +5,7 @@ std::map<const MainController*, Cube> CubeApi::cubes = {};
 CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
         ScriptingObject(p), ApiClass(0) {
     ADD_API_METHOD_3(setOrbPosition);
+    ADD_API_METHOD_1(setOrbTime);
     ADD_API_METHOD_0(getOrbPosition);
     ADD_API_METHOD_0(showOrbit);
     ADD_API_METHOD_0(hideOrbit);
@@ -40,6 +41,11 @@ Array<var> CubeApi::getOrbPosition() {
     orbPosition.add(cube.orb.y);
     orbPosition.add(cube.orb.z);
     return orbPosition;
+}
+
+void CubeApi::setOrbTime(float t) {
+    Cube& cube = getCubeData();
+    cube.orb.orbitTime = t;
 }
 
 void CubeApi::showOrbit() {
