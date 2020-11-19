@@ -204,6 +204,8 @@ void Arpeggiator::onInit()
 	semiToneSliderPack->set("max", 24);
 	semiToneSliderPack->set("sliderAmount", 4);
 	semiToneSliderPack->set("stepSize", 1);
+	semiToneSliderPack->set("defaultValue", "1");
+
 	velocitySliderPack = Content.addSliderPack("VelocitySliderPack", 160, 160);
 	velocitySliderPack->getSliderPackData()->setDefaultValue(127.0);
 
@@ -212,10 +214,11 @@ void Arpeggiator::onInit()
 	velocitySliderPack->set("max", 127);
 	velocitySliderPack->set("sliderAmount", 4);
 	velocitySliderPack->set("stepSize", "1");
+	velocitySliderPack->set("defaultValue", "1");
 	
 	
 	lengthSliderPack = Content.addSliderPack("LengthSliderPack", 160, 290);
-	lengthSliderPack->getSliderPackData()->setDefaultValue(75.0);
+	lengthSliderPack->getSliderPackData()->setDefaultValue(0.75);
 
 	lengthSliderPack->set("width", 512);
 	lengthSliderPack->set("max", 100);
@@ -304,7 +307,7 @@ void Arpeggiator::onInit()
 	mpeEndChannel->addItem("Channel 15");
 	mpeEndChannel->addItem("Channel 16");
 
-	keyRangeLo = Content.addKnob("KeyRangeLo", 450, 375);
+	keyRangeLo = Content.addKnob("KeyRangeLo", 10, 505);
 
 	keyRangeLo->set("text", "KeyRangeLo");
 	keyRangeLo->set("min", 0);
@@ -314,7 +317,7 @@ void Arpeggiator::onInit()
 
 	parameterNames.add("KeyRangeLo");
 
-	keyRangeHi = Content.addKnob("keyRangeHi", 600, 375);
+	keyRangeHi = Content.addKnob("keyRangeHi", 150, 505);
 
 	keyRangeHi->set("text", "keyRangeHi");
 	keyRangeHi->set("min", 0);
@@ -323,6 +326,7 @@ void Arpeggiator::onInit()
 	keyRangeHi->set("middlePosition", 60);
 
 	parameterNames.add("keyRangeHi");
+
 	sustainHold = Content.addButton("Hold", 85, 70);
 	
 	parameterNames.add("Hold");

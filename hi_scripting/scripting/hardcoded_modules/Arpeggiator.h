@@ -60,7 +60,6 @@ public:
 		OctaveRange,
 		Shuffle,
 		CurrentStep,
-		Color,
 		KeyRangeLo,
 		KeyRangeHi,
 	};
@@ -360,7 +359,6 @@ private:
 	ScriptComboBox mpeStartChannel;
 	ScriptComboBox mpeEndChannel;
 	ScriptButton enableTieNotes;
-	ScriptSlider color;
 	ScriptSlider keyRangeLo;
 	ScriptSlider keyRangeHi;
 
