@@ -480,9 +480,11 @@ void StreamingSamplerSound::lengthChanged()
 {
 	ScopedLock sl(getSampleLock());
 
-	sampleLength = jmax<int>(0, sampleEnd - sampleStart);
-
-	setPreloadSize(preloadSize, true);
+	if (sampleEnd != MAX_SAMPLE_NUMBER)
+	{
+		sampleLength = jmax<int>(0, sampleEnd - sampleStart);
+		setPreloadSize(preloadSize, true);
+	}
 }
 
 void StreamingSamplerSound::applyCrossfadeToPreloadBuffer()
@@ -509,7 +511,7 @@ void StreamingSamplerSound::loopChanged()
 	if (sampleEnd == MAX_SAMPLE_NUMBER && loopEnabled)
 	{
 		fileReader.openFileHandles();
-		sampleEnd = fileReader.getSampleLength();
+		sampleEnd = (int)fileReader.getSampleLength();
 	}
 
 	loopStart = jmax<int>(loopStart, sampleStart);
