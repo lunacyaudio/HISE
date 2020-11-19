@@ -534,8 +534,6 @@ void PresetHandler::saveProcessorAsPreset(Processor *p, const String &directoryP
         
         v.setProperty("BuildVersion", BUILD_SUB_VERSION, nullptr);
 
-		FullInstrumentExpansion::setNewDefault(p->getMainController(), v);
-
 		outputFile.deleteFile();
 
 		FileOutputStream fos(outputFile);
@@ -2921,14 +2919,17 @@ juce::Image MessageWithIcon::LookAndFeelMethods::createIcon(PresetHandler::IconT
 	{
 	case PresetHandler::IconType::Info: return ImageCache::getFromMemory(
 		BinaryData::infoInfo_png, BinaryData::infoInfo_pngSize);
+		break;
 	case PresetHandler::IconType::Warning: return ImageCache::getFromMemory(BinaryData::infoWarning_png, BinaryData::infoWarning_pngSize);
+		break;
 	case PresetHandler::IconType::Question: return ImageCache::getFromMemory(BinaryData::infoQuestion_png, BinaryData::infoQuestion_pngSize);
+		break;
 	case PresetHandler::IconType::Error: return ImageCache::getFromMemory(BinaryData::infoError_png, BinaryData::infoError_pngSize);
-	case PresetHandler::IconType::numIconTypes: 
+		break;
+	case PresetHandler::IconType::numIconTypes: return Image(); jassertfalse;
+		break;
 	default:
-		jassertfalse;
-		return Image(); 
-		
+		break;
 	}
 }
 

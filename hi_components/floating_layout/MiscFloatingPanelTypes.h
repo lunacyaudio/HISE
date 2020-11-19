@@ -41,9 +41,7 @@ class InterfaceContentPanel : public FloatingTileContent,
 							  public Component,
 							  public GlobalScriptCompileListener,
 							  public ButtonListener,
-							  public GlobalSettingManager::ScaleFactorListener,
-							  public ExpansionHandler::Listener,
-							  public MainController::LockFreeDispatcher::PresetLoadListener
+							  public GlobalSettingManager::ScaleFactorListener
 {
 public:
 
@@ -54,10 +52,6 @@ public:
 
 	void paint(Graphics& g) override;
 	void resized();
-
-	void newHisePresetLoaded() override;
-
-	void expansionPackLoaded(Expansion* currentExpansion) override;
 
 	void scriptWasCompiled(JavascriptProcessor *processor) override;
 	void buttonClicked(Button* b) override;

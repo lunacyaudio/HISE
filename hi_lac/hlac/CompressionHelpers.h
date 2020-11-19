@@ -379,15 +379,12 @@ struct HlacArchiver
 		SplitMonolith,
 		ResumeMonolith,
 		EndOfArchive,
-		BeginHeaderFile,
-		EndHeaderFile,
 		numFlags
 	};
 
 	struct CompressData
 	{
 		Array<File> fileList;
-		File optionalHeaderFile;
 		File targetFile;
 		String metadataJSON;
 		int64 partSize = -1;
@@ -430,8 +427,6 @@ struct HlacArchiver
 	void compressSampleData(const CompressData& data);
 
 	static String getMetadataJSON(const File& sourceFile);
-
-	var readMetadataFromArchive(const File& archiveFile);
 
 	void setListener(Listener* l)
 	{

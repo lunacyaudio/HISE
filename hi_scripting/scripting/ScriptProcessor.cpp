@@ -1001,9 +1001,8 @@ hise::JavascriptCodeEditor* JavascriptProcessor::getActiveEditor()
 {
 #if USE_BACKEND
 	return dynamic_cast<JavascriptCodeEditor*>(dynamic_cast<Processor*>(this)->getMainController()->getLastActiveEditor());
-#else
-	return nullptr;
 #endif
+	return nullptr;
 }
 
 void JavascriptProcessor::fileChanged()
@@ -1519,7 +1518,7 @@ String JavascriptProcessor::Helpers::uglify(const String& prettyCode)
 	}
 }
 
-String JavascriptProcessor::collectScript(bool silent) const
+String JavascriptProcessor::getBase64CompressedScript() const
 {
 	String x;
 	mergeCallbacksToScript(x, NewLine::getDefault());
@@ -1528,25 +1527,11 @@ String JavascriptProcessor::collectScript(bool silent) const
 
 	Array<File> includedFiles;
 	String everything = Helpers::resolveIncludeStatements(x, includedFiles, this);
+	String stripped = Helpers::stripUnusedNamespaces(everything, counter);
 
-	if (!silent && counter != 0)
-	{
-		everything = Helpers::stripUnusedNamespaces(everything, counter);
+	if (counter != 0) PresetHandler::showMessageWindow("Unneeded namespaces detected", String(counter) + " namespaces will be removed before exporting");
 
-		if(counter != 0)
-			PresetHandler::showMessageWindow("Unneeded namespaces detected", String(counter) + " namespaces will be removed before exporting");
-	}
-
-	return everything;
-}
-
-
-
-String JavascriptProcessor::getBase64CompressedScript(bool silent) const
-{
-	auto stripped = collectScript(silent);
-
-	if (silent || PresetHandler::showYesNoWindow("Uglify Script", "Do you want to strip comments & whitespace before compressing?"))
+	if(PresetHandler::showYesNoWindow("Uglify Script", "Do you want to strip comments & whitespace before compressing?"))
 		stripped = Helpers::uglify(stripped);
 
 	MemoryOutputStream mos;
@@ -1883,13 +1868,11 @@ void JavascriptThreadPool::addJob(Task::Type t, JavascriptProcessor* p, const Ta
 	}
 	case MainController::KillStateHandler::AudioThread:
 	{
-		// Nope...
 		jassertfalse;
 		break;
 	}
     default:
-		// We're calling any task from an unspecified thread (eg. server download thread).
-		pushToQueue(t, p, f);
+        jassertfalse;
         break;
 	};
 }

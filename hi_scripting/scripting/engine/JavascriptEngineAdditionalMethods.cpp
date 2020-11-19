@@ -39,12 +39,7 @@ namespace hise { using namespace juce;
 
 bool HiseJavascriptEngine::isJavascriptFunction(const var& v)
 {
-	if (auto obj = v.getObject())
-	{
-		return dynamic_cast<RootObject::FunctionObject*>(obj) || dynamic_cast<RootObject::InlineFunction::Object*>(obj);
-	}
-
-	return false;
+	return v.isObject() && dynamic_cast<HiseJavascriptEngine::RootObject::FunctionObject*>(v.getObject());
 }
 
 HiseJavascriptEngine::HiseJavascriptEngine(JavascriptProcessor *p) : maximumExecutionTime(15.0), root(new RootObject()), unneededScope(new DynamicObject())
@@ -297,13 +292,11 @@ var HiseJavascriptEngine::callExternalFunctionRaw(var function, const var::Nativ
 {
 	ScopedValueSetter<bool> svs(externalFunctionPending, true);
 
-	if (auto fo = dynamic_cast<RootObject::FunctionObject*>(function.getObject()))
+	RootObject::FunctionObject *fo = dynamic_cast<RootObject::FunctionObject*>(function.getObject());
+
+	if (fo != nullptr)
 	{
 		return fo->invoke(RootObject::Scope(nullptr, root, root), args);;
-	}
-	else if (auto ifo = dynamic_cast<RootObject::InlineFunction::Object*>(function.getObject()))
-	{
-		return ifo->performDynamically(RootObject::Scope(nullptr, root, root), const_cast<var*>(args.arguments), args.numArguments);
 	}
     
     return var();
