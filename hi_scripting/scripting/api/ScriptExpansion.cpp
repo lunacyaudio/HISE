@@ -319,17 +319,6 @@ var ScriptExpansionReference::loadDataFile(var relativePath)
 	return JSON::parse(fileToLoad.loadFileAsString());
 }
 
-<<<<<<< HEAD
-String ScriptExpansionReference::getWildcardReference(var relativePath)
-{
-	if (objectExists())
-		return exp->getWildcard() + relativePath.toString();
-
-	return {};
-}
-
-=======
->>>>>>> parent of 890ed452... Merge pull request #163 from christophhart/full_exp
 bool ScriptExpansionReference::writeDataFile(var relativePath, var dataToWrite)
 {
 	auto content = JSON::toString(dataToWrite);
