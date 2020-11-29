@@ -9,8 +9,12 @@ struct Orb {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
-    float rippleAmount = 1.0f;
+
     float wiggleAmount = 1.0f;
+
+    // How much the orb should ripple from each of the 8 corners.
+    std::vector<float> rippleAmounts = {1.0f, 1.0f, 1.0f, 1.0f,
+                                        1.0f, 1.0f, 1.0f, 1.0f};
 
     // Normalized time within the orbit, between 0 and 1.
     float orbitTime = 0.0f;
@@ -95,7 +99,7 @@ public:
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitRotation);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitMirror);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
-        API_VOID_METHOD_WRAPPER_1(CubeApi, setRippleAmount);
+        API_VOID_METHOD_WRAPPER_2(CubeApi, setRippleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setWiggleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEther);
         API_VOID_METHOD_WRAPPER_2(CubeApi, setCornerData);
@@ -116,7 +120,7 @@ public:
     void setOrbitIntensity(float intensity);
     void enableDragging();
     void disableDragging();
-    void setRippleAmount(float rippleAmount);
+    void setRippleAmount(int id, float rippleAmount);
     void setWiggleAmount(float wiggleAmount);
     void setEther(float ether);
     void setCornerData(String id, var data);
