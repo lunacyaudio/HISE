@@ -1174,7 +1174,7 @@ juce::File FrontendHandler::getSubDirectory(SubDirectories directory) const
 	case hise::FileHandlerBase::numSubDirectories:
 	case hise::FileHandlerBase::MidiFiles:
 		jassertfalse;
-		break;
+		break; 
 	case hise::FileHandlerBase::UserPresets:
 		return getRootFolder().getChildFile("User Presets");
 	case hise::FileHandlerBase::Samples:
@@ -2081,9 +2081,6 @@ void PresetHandler::checkMetaParameters(Processor* p)
 
 				auto checkAsExpected = [](DynamicObject* obj, ScriptComponent* c)
 				{
-					auto ev = (double)obj->getProperty(c->getName());
-					auto v = (double)c->getValue();
-
 					auto expectedValue = obj->getProperty(c->getName());
 
 					if (expectedValue != c->getValue())

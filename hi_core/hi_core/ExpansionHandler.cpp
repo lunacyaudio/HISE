@@ -307,7 +307,67 @@ void ExpansionHandler::setCurrentExpansion(Expansion* e)
 	if (currentExpansion != e)
 	{
 		currentExpansion = e;
-		notifier.sendNotification(Notifier::EventType::ExpansionLoaded);
+
+		notifier.sendNotification(Notifier::EventType::ExpansionLoaded, notifyListeners);
+	}
+}
+
+bool ExpansionHandler::installFromResourceFile(const File& resourceFile)
+{
+	hlac::HlacArchiver a(nullptr);
+
+	auto obj = a.readMetadataFromArchive(resourceFile);
+	auto expansionName = obj.getProperty("HxiName", "").toString();
+
+	if (expansionName.isNotEmpty())
+	{
+		auto f = [this, expansionName, resourceFile](Processor* p)
+		{
+			jassert(LockHelpers::freeToGo(mc));
+
+			auto expRoot = getExpansionFolder().getChildFile(expansionName);
+
+			expRoot.createDirectory();
+			auto samplesDir = expRoot.getChildFile("Samples");
+			samplesDir.createDirectory();
+
+			hlac::HlacArchiver::DecompressData data;
+
+			double unused = 0.0;
+
+			data.option = hlac::HlacArchiver::OverwriteOption::OverwriteIfNewer;
+			data.targetDirectory = samplesDir;
+			data.progress = &mc->getSampleManager().getPreloadProgress();
+			data.totalProgress = &unused;
+			data.partProgress = &unused;
+			data.sourceFile = resourceFile;
+
+			hlac::HlacArchiver a(Thread::getCurrentThread());
+			a.setListener(this);
+			auto ok = a.extractSampleData(data);
+
+			ignoreUnused(ok);
+
+			auto headerFile = samplesDir.getChildFile("header.dat");
+			jassert(headerFile.existsAsFile());
+
+			if (getCredentials().isObject())
+				ScriptEncryptedExpansion::encryptIntermediateFile(mc, headerFile, expRoot);
+			else
+			{
+				auto hxiFile = Expansion::Helpers::getExpansionInfoFile(expRoot, Expansion::Intermediate);
+				hxiFile.deleteFile();
+
+				if (headerFile.moveFileTo(hxiFile))
+					createAvailableExpansions();
+			}
+
+			return SafeFunctionCall::OK;
+		};
+
+		mc->getKillStateHandler().killVoicesAndCall(mc->getMainSynthChain(), f, MainController::KillStateHandler::SampleLoadingThread);
+
+		return true;
 	}
 }
 

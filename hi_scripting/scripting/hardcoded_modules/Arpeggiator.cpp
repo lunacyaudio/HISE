@@ -204,8 +204,6 @@ void Arpeggiator::onInit()
 	semiToneSliderPack->set("max", 24);
 	semiToneSliderPack->set("sliderAmount", 4);
 	semiToneSliderPack->set("stepSize", 1);
-	semiToneSliderPack->set("defaultValue", "1");
-
 	velocitySliderPack = Content.addSliderPack("VelocitySliderPack", 160, 160);
 	velocitySliderPack->getSliderPackData()->setDefaultValue(127.0);
 
@@ -214,11 +212,10 @@ void Arpeggiator::onInit()
 	velocitySliderPack->set("max", 127);
 	velocitySliderPack->set("sliderAmount", 4);
 	velocitySliderPack->set("stepSize", "1");
-	velocitySliderPack->set("defaultValue", "1");
 	
 	
 	lengthSliderPack = Content.addSliderPack("LengthSliderPack", 160, 290);
-	lengthSliderPack->getSliderPackData()->setDefaultValue(0.75);
+	lengthSliderPack->getSliderPackData()->setDefaultValue(75.0);
 
 	lengthSliderPack->set("width", 512);
 	lengthSliderPack->set("max", 100);
@@ -307,26 +304,6 @@ void Arpeggiator::onInit()
 	mpeEndChannel->addItem("Channel 15");
 	mpeEndChannel->addItem("Channel 16");
 
-	keyRangeLo = Content.addKnob("KeyRangeLo", 10, 505);
-
-	keyRangeLo->set("text", "KeyRangeLo");
-	keyRangeLo->set("min", 0);
-	keyRangeLo->set("max", 127);
-	keyRangeLo->set("stepSize", "1");
-	keyRangeLo->set("middlePosition", 60);
-
-	parameterNames.add("KeyRangeLo");
-
-	keyRangeHi = Content.addKnob("keyRangeHi", 150, 505);
-
-	keyRangeHi->set("text", "keyRangeHi");
-	keyRangeHi->set("min", 0);
-	keyRangeHi->set("max", 127);
-	keyRangeHi->set("stepSize", "1");
-	keyRangeHi->set("middlePosition", 60);
-
-	parameterNames.add("keyRangeHi");
-
 	sustainHold = Content.addButton("Hold", 85, 70);
 	
 	parameterNames.add("Hold");
@@ -353,8 +330,6 @@ void Arpeggiator::onInit()
 	mpeStartChannel->setValue(2);
 	mpeEndChannel->setValue(16);
 	enableTieNotes->setValue(1);
-	keyRangeLo->setValue(0);
-	keyRangeHi->setValue(127);
 
 	velocitySliderPack->setAllValues(127);
 	lengthSliderPack->setAllValues(75);
@@ -388,34 +363,32 @@ void Arpeggiator::onNoteOn()
 	if(killIncomingNotes || mpeMode)
 		Message.ignoreEvent(true);
 
-	// added key range limits
-	if ((int)Message.getNoteNumber() >= (int)keyRangeLo->getValue() && (int)Message.getNoteNumber() <= (int)keyRangeHi->getValue()) {
-		minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
+	minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
 
-		NoteWithChannel newNote = { (int8)Message.getNoteNumber(), (int8)Message.getChannel() };
+	NoteWithChannel newNote = { (int8)Message.getNoteNumber(), (int8)Message.getChannel() };
 
-		addUserHeldKey(newNote);
+	addUserHeldKey(newNote);
 
-		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000)))
-		{
-			// Here we land if the chord mode has just been started but the
-			// arp is already playing, so we need to manually play the note.
-			newNote += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
-			int thisId = sendNoteOnInternal(newNote);
-			Synth.noteOffDelayedByEventId(thisId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
+	if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < 0.02))
+	{
+		// Here we land if the chord mode has just been started but the
+		// arp is already playing, so we need to manually play the note.
+		newNote += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
+		int thisId = sendNoteOnInternal(newNote);
+		Synth.noteOffDelayedByEventId(thisId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
 
-			additionalChordStartKeys.add(thisId);
-		}
-
-		// do not call playNote() if timer is already running
-		if (!is_playing)
-		{
-			if (currentDirection == Direction::Chord)
-				chordStartUptime = Engine.getUptime();
-
-			playNote();
-		}
+		additionalChordStartKeys.add(thisId);
 	}
+
+	// do not call playNote() if timer is already running
+	if (!is_playing)
+	{
+		if (currentDirection == Direction::Chord)
+			chordStartUptime = Engine.getUptime();
+
+		playNote();
+	}
+		
 }
 
 void Arpeggiator::onNoteOff()
@@ -833,6 +806,13 @@ void Arpeggiator::changeDirection()
 	case Direction::Random:
 		randomOrder = true;
 		break;
+    case Direction::Chord:
+        arpDirMod = 1;
+        randomOrder = false;
+        break;
+    default:
+        jassertfalse;
+        break;
 	}
 }
 
@@ -893,6 +873,7 @@ void Arpeggiator::reset(bool do_all_notes_off, bool do_stop)
 	{
 	case Direction::Up:
 	case Direction::UpDown:
+    case Direction::Chord:
 		arpDirMod = 1;
 		curHeldNoteIdx = 0;
 		break;
@@ -901,6 +882,9 @@ void Arpeggiator::reset(bool do_all_notes_off, bool do_stop)
 		arpDirMod = -1;
 		curHeldNoteIdx = MidiSequenceArray.size() - 1;
 		break;
+    default:
+        jassertfalse;
+        break;
 	}
 
 	if (do_all_notes_off)
