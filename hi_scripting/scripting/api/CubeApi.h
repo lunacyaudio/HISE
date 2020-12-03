@@ -9,8 +9,12 @@ struct Orb {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
-    float rippleAmount = 1.0f;
+
     float wiggleAmount = 1.0f;
+
+    // How much the orb should ripple from each of the 8 corners.
+    std::vector<float> rippleAmounts = {1.0f, 1.0f, 1.0f, 1.0f,
+                                        1.0f, 1.0f, 1.0f, 1.0f};
 
     // Normalized time within the orbit, between 0 and 1.
     float orbitTime = 0.0f;
@@ -80,8 +84,8 @@ public:
 
     ~CubeApi();
 
-	struct Wrapper {
-		API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
+    struct Wrapper {
+        API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbTime);
         API_METHOD_WRAPPER_0(CubeApi, getOrbPosition);
         API_VOID_METHOD_WRAPPER_0(CubeApi, showOrbit);
@@ -95,12 +99,12 @@ public:
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitRotation);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitMirror);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
-        API_VOID_METHOD_WRAPPER_1(CubeApi, setRippleAmount);
+        API_VOID_METHOD_WRAPPER_2(CubeApi, setRippleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setWiggleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEther);
         API_VOID_METHOD_WRAPPER_2(CubeApi, setCornerData);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setCornerButtonCallback);
-	};
+    };
 
     void setOrbPosition(float x, float y, float z);
     void setOrbTime(float t);
@@ -116,13 +120,13 @@ public:
     void setOrbitIntensity(float intensity);
     void enableDragging();
     void disableDragging();
-    void setRippleAmount(float rippleAmount);
+    void setRippleAmount(int id, float rippleAmount);
     void setWiggleAmount(float wiggleAmount);
     void setEther(float ether);
     void setCornerData(String id, var data);
     void setCornerButtonCallback(var callback);
 
-	Identifier getObjectName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
+    Identifier getObjectName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
     static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
 
 private:
@@ -132,7 +136,7 @@ private:
 
     Cube& getCubeData();
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CubeApi);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CubeApi);
 };
 
 }
