@@ -55,17 +55,6 @@ void SampleEditHandler::SampleEditingActions::deleteSelectedSounds(SampleEditHan
 	
 }
 
-void SampleEditHandler::SampleEditingActions::removeNormalisationInfo(SampleEditHandler* body)
-{
-	ModulatorSampler::SoundIterator it(body->getSampler());
-
-	while (auto s = it.getNextSound())
-	{
-		s->removeNormalisationInfo(body->getSampler()->getUndoManager());
-	}
-}
-
-
 void SampleEditHandler::SampleEditingActions::duplicateSelectedSounds(SampleEditHandler *handler)
 {
 	ModulatorSampler *s = handler->sampler;

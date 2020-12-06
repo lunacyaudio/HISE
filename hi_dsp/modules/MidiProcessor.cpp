@@ -119,8 +119,6 @@ bool MidiProcessorChain::setArtificialTimestamp(uint16 eventId, int newTimestamp
 			return true;
 		}
 	}
-
-	return false;
 }
 
 void MidiProcessorChain::renderNextHiseEventBuffer(HiseEventBuffer &buffer, int numSamples)

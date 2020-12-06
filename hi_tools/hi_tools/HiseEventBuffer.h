@@ -37,13 +37,6 @@ namespace hise { using namespace juce;
 
 #define HISE_EVENT_ID_ARRAY_SIZE 16384
 
-// Apparently, windows doesn't like the alignment specification
-#if JUCE_WINDOWS
-#define event_alignment
-#else
-#define event_alignment alignas(16)
-#endif
-
 /** The event type of HISE.
 	@ingroup core
 	
@@ -80,7 +73,7 @@ namespace hise { using namespace juce;
 
 
 	*/
-class event_alignment HiseEvent
+class HiseEvent
 {
 public:
 
@@ -729,12 +722,11 @@ private:
 
 	void insertEventAtPosition(const HiseEvent& e, int positionInBuffer);
 
-	event_alignment HiseEvent buffer[HISE_EVENT_BUFFER_SIZE];
+	HiseEvent buffer[HISE_EVENT_BUFFER_SIZE];
 
 	int numUsed = 0;
 };
 
-#undef event_alignment
 
 
 

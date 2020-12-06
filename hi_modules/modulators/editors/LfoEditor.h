@@ -121,10 +121,10 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-    int h = 0;
+	int h;
 
-    bool tableUsed = false;
-    bool stepsUsed = false;
+	bool tableUsed;
+	bool stepsUsed;
 
 	ScopedPointer<SliderPack> stepPanel;
 

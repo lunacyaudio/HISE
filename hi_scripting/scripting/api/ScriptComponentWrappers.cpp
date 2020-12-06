@@ -1680,7 +1680,8 @@ void ScriptCreatedComponentWrappers::PanelWrapper::subComponentAdded(ScriptCompo
 void ScriptCreatedComponentWrappers::PanelWrapper::subComponentRemoved(ScriptComponent* componentAboutToBeRemoved)
 {
 	BorderPanel *bpc = dynamic_cast<BorderPanel*>(component.get());
-	
+	auto sc = dynamic_cast<ScriptingApi::Content::ScriptPanel*>(getScriptComponent());
+
 	for (int i = 0; i < childPanelWrappers.size(); i++)
 	{
 		if (childPanelWrappers[i]->getScriptComponent() == componentAboutToBeRemoved)
@@ -1852,8 +1853,7 @@ void ScriptCreatedComponentWrappers::SliderPackWrapper::updateValue(var newValue
 	}
 }
 
-class ScriptCreatedComponentWrappers::AudioWaveformWrapper::SamplerListener : public SafeChangeListener,
-																			  public SampleMap::Listener
+class ScriptCreatedComponentWrappers::AudioWaveformWrapper::SamplerListener : public SafeChangeListener
 {
 public:
 
@@ -1861,8 +1861,6 @@ public:
 		s(s_),
 		waveform(waveform_)
 	{
-		s->getSampleMap()->addListener(this);
-
 		s->addChangeListener(this);
 
 		if (auto v = s->getLastStartedVoice())
@@ -1875,35 +1873,7 @@ public:
 	{
 		lastSound = nullptr;
 
-		if (s != nullptr)
-		{
-			s->getSampleMap()->removeListener(this);
-			s->removeChangeListener(this);
-		}
-	}
-
-	void refreshAfterSampleMapChange()
-	{
-		if (displayedIndex != -1)
-		{
-			if(auto newSound =  s->getSound(displayedIndex))
-				waveform->setSoundToDisplay(dynamic_cast<ModulatorSamplerSound*>(newSound), 0);
-		}
-	}
-
-	void sampleMapWasChanged(PoolReference ) override
-	{
-		refreshAfterSampleMapChange();
-	}
-
-	void sampleAmountChanged() override 
-	{
-		refreshAfterSampleMapChange();
-	};
-
-	void sampleMapCleared() override 
-	{
-		refreshAfterSampleMapChange();
+		s->removeChangeListener(this);
 	}
 
     void setActive(bool shouldBeActive)
@@ -1929,8 +1899,6 @@ public:
 		}
 	}
 
-
-	int displayedIndex = -1;
 
     bool active = true;
 	ModulatorSampler* s;
@@ -2032,7 +2000,6 @@ void ScriptCreatedComponentWrappers::AudioWaveformWrapper::updateSampleIndex(Scr
             if(samplerListener != nullptr)
             {
                 samplerListener->setActive(newValue == -1);
-				samplerListener->displayedIndex = newValue;
             }
             
             if(newValue != -1 && lastIndex != newValue)

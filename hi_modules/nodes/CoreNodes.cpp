@@ -405,7 +405,6 @@ void oscillator_impl<NV>::processSingle(float* data, int )
 	case Mode::Triangle: *data += tickTriangle(d); break;
 	case Mode::Saw: *data += tickSaw(d); break;
 	case Mode::Square: *data += tickSquare(d); break;
-        default: jassertfalse; break;
 	}
 
 	
@@ -456,7 +455,6 @@ void oscillator_impl<NV>::process(ProcessData& data)
 
 		break;
 	}
-    default: jassertfalse; break;
 	}
 }
 
@@ -470,7 +468,7 @@ float scriptnode::core::oscillator_impl<NV>::tickNoise(OscData& d)
 template <int NV>
 float scriptnode::core::oscillator_impl<NV>::tickSaw(OscData& d)
 {
-	return 2.0f * std::fmod(d.tick() / sinTable->getTableSize(), 1.0f) - 1.0f;
+	return 2.0f * std::fmodf(d.tick() / (float)sinTable->getTableSize(), 1.0f) - 1.0f;
 }
 
 template <int NV>

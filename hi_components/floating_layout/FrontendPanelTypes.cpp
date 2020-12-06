@@ -894,6 +894,8 @@ int FrontendMacroPanel::getNumRows()
 		return 0;
 	}
 
+	int numConnections = 0;
+
 	Array<WeakReference<MacroControlBroadcaster::MacroControlledParameterData>> newList;
 
 	for (int i = 0; i < 8; i++)
@@ -1082,6 +1084,8 @@ juce::String MidiLearnPanel::getCellText(int rowNumber, int columnId) const
 		return ProcessorHelpers::getPrettyNameForAutomatedParameter(data.processor, data.attribute);
 	else if (columnId == ColumnId::CCNumber)
 		return String(data.ccNumber);
+	else
+		return "";
 }
 
 TableFloatingTileBase::InvertedButton::InvertedButton(TableFloatingTileBase &owner_) :

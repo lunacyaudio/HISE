@@ -107,8 +107,6 @@ public:
 
 	struct LookAndFeelMethods
 	{
-        virtual ~LookAndFeelMethods() {};
-        
 		virtual void drawNumberTag(Graphics& g, Colour& c, Rectangle<int> area, int offset, int size, int number)
 		{
 			if (number > 0)
@@ -150,7 +148,7 @@ public:
 			return;
 
 		if (auto l = dynamic_cast<LookAndFeelMethods*>(&getLookAndFeel()))
-			l->drawNumberTag(g, c, getLocalBounds(), offset, size, number);
+			l->drawNumberTag(g, c, getLocalBounds(), roundToInt(offset), roundToInt(size), number);
 	};
  	
 	void setNumber(int newNumber)

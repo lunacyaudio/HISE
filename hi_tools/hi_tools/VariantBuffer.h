@@ -39,10 +39,7 @@
 
 namespace juce { using namespace hise;
 
-#ifndef RETURN_STATIC_IDENTIFIER
-#define RETURN_STATIC_IDENTIFIER(x) const static Identifier id_(x); return id_;
-#endif
-
+#define RETURN_STATIC_IDENTIFIER(name) static const Identifier id(name); return id;
 #define CHECK_CONDITION(condition, errorMessage) if(!(condition)) throw String(errorMessage);
 #define CHECK_CONDITION_WITH_LOCATION(condition, errorMessage) if(!(condition)) location.throwError(errorMessage);
 

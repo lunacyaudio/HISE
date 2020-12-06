@@ -182,7 +182,6 @@ juce::File SampleEditHandler::getCurrentSampleMapDirectory() const
 	return handler->getSubDirectory(ProjectHandler::SubDirectories::SampleMaps);
 }
 
-
 void SampleEditHandler::SampleEditingActions::createMultimicSampleMap(SampleEditHandler* handler)
 {
 	

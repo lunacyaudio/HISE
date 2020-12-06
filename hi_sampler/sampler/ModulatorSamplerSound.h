@@ -347,8 +347,6 @@ public:
 	*/
 	void calculateNormalizedPeak();;
 
-	void removeNormalisationInfo(UndoManager* um);
-
 	/**	Returns the gain value that must be applied to normalize the volume of the sample ( 1.0 / peakValue ). */
 	float getNormalizedPeak() const;
 

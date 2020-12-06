@@ -353,11 +353,8 @@ void ProcessorEditorChainBar::resized()
 		if (chainButtons[i]->isVisible()) numVisibleChains++;
 	}
 
-    const int buttonWidth = numVisibleChains > 0 ? (int)(totalWidth / (float)numVisibleChains) : 0;
+	const int buttonWidth = (int)(totalWidth / (float)numVisibleChains);
 
-    if(buttonWidth == 0)
-        return;
-    
 	for(int i = 0; i < chainButtons.size(); i++)
 	{
 		if (!chainButtons[i]->isVisible()) continue;

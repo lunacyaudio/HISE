@@ -416,7 +416,7 @@ private:
 
 		Atomic<int> voiceCount;
 
-        bool fileFormatSupportsMemoryReading = true;
+		bool fileFormatSupportsMemoryReading;
 
 		bool missing;
 

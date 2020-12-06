@@ -34,7 +34,6 @@ namespace
     {
        #if JUCE_DEBUG
         const int maxVal = 0x3fffffff;
-        ignoreUnused(maxVal);
 
 #if 0
         jassert ((int) x >= -maxVal && (int) x <= maxVal

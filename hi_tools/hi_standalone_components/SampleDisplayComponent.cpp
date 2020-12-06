@@ -733,7 +733,12 @@ void HiseAudioThumbnail::LoadingThread::scalePathFromLevels(Path &p, RectangleLi
 {
 	if (!rects.isEmpty())
 	{
+		auto levels = FloatVectorOperations::findMinAndMax(data, numSamples);
+
+		auto b = rects.getBounds();
+		
 		rects.offsetAll(bounds.getX(), bounds.getY() + bounds.getHeight()*0.5f);
+
 		return;
 	}
 

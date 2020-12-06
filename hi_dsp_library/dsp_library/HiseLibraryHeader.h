@@ -172,9 +172,7 @@ namespace hise {using namespace juce;
 /** @file */ 
 
 /** returns a static Identifier called `id`. */
-#ifndef RETURN_STATIC_IDENTIFIER
-#define RETURN_STATIC_IDENTIFIER(x) const static Identifier id_(x); return id_;
-#endif
+#define RETURN_STATIC_IDENTIFIER(x) const static Identifier id(x); return id;
 
 /** Adds a case statement for the enum and returns the name of the enum. */
 #define FILL_PARAMETER_ID(enumClass, enumId, size, text) case (int)enumClass::enumId: size = HelperFunctions::writeString(text, #enumId); break;

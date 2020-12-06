@@ -131,10 +131,7 @@ auto busProp = BusesProperties();
 		return (layouts.getMainInputChannels() == 2 && layouts.getMainOutputChannels() == 2);
 #endif
 #else
-        bool isStereo = (layouts.getMainInputChannels() == 2) && (layouts.getMainOutputChannels() == 2);
-        bool isMultiChannel = (layouts.getMainInputChannels() == HISE_NUM_PLUGIN_CHANNELS) && (layouts.getMainOutputChannels() == HISE_NUM_PLUGIN_CHANNELS);
-        
-        return isStereo || isMultiChannel;
+        return (layouts.getMainInputChannels() == 2);
 #endif
     }
     

@@ -563,8 +563,14 @@ Array<HiseEvent> HiseMidiSequence::getEventList(double sampleRate, double bpm)
 
 void HiseMidiSequence::swapCurrentSequence(MidiMessageSequence* sequenceToSwap)
 {
-	SimpleReadWriteLock::ScopedWriteLock sl(swapLock);
-	sequences.set(currentTrackIndex, sequenceToSwap, true);
+	ScopedPointer<MidiMessageSequence> oldSequence = sequences[currentTrackIndex];
+
+	{
+		SimpleReadWriteLock::ScopedWriteLock sl(swapLock);
+		sequences.set(currentTrackIndex, sequenceToSwap, false);
+	}
+	
+	oldSequence = nullptr;
 }
 
 
@@ -688,7 +694,6 @@ MidiPlayer::MidiPlayer(MainController *mc, const String &id, ModulatorSynth* ) :
 	addAttributeID(CurrentSequence);
 	addAttributeID(CurrentTrack);
 	addAttributeID(ClearSequences);
-	addAttributeID(PlaybackSpeed);
 
 	mc->addTempoListener(this);
 
@@ -711,7 +716,6 @@ juce::ValueTree MidiPlayer::exportAsValueTree() const
 	saveID(CurrentSequence);
 	saveID(CurrentTrack);
 	saveID(LoopEnabled);
-	saveID(PlaybackSpeed);
 
 	SimpleReadWriteLock::ScopedReadLock sl(sequenceLock);
 
@@ -756,13 +760,6 @@ void MidiPlayer::restoreFromValueTree(const ValueTree &v)
 	loadID(CurrentSequence);
 	loadID(CurrentTrack);
 	loadID(LoopEnabled);
-
-	if (v.hasProperty("PlaybackSpeed"))
-	{
-		loadID(PlaybackSpeed);
-	}
-	else
-		setInternalAttribute(PlaybackSpeed, 1.0f);
 }
 
 void MidiPlayer::addSequence(HiseMidiSequence::Ptr newSequence, bool select)
@@ -836,7 +833,6 @@ float MidiPlayer::getAttribute(int index) const
 	case LoopEnabled:			return loopEnabled ? 1.0f : 0.0f;
 	case LoopStart:				return (float)getLoopStart();
 	case LoopEnd:				return (float)getLoopEnd();
-	case PlaybackSpeed:			return (float)playbackSpeed;
 	default:
 		break;
 	}
@@ -907,13 +903,6 @@ void MidiPlayer::setInternalAttribute(int index, float newAmount)
 
 		break;
 	}
-	case PlaybackSpeed: 
-		if (playbackSpeed != (double)newAmount)
-		{
-			playbackSpeed = jlimit(0.1, 10.0, (double)newAmount);
-			getMainController()->allNotesOff();
-		}
-		break;
 	case LoopEnabled: loopEnabled = newAmount > 0.5f; break;
 	default:
 		break;
@@ -991,18 +980,23 @@ void MidiPlayer::preprocessBuffer(HiseEventBuffer& buffer, int numSamples)
 			return;
 		}
 
+		
 		seq->setCurrentTrackIndex(currentTrackIndex);
+
+		
 
 		if (currentPosition < loopStart)
 		{
+			currentPosition = loopStart;
 			updatePositionInCurrentSequence();
 		}
 		else if (currentPosition > loopEnd)
 		{
+			currentPosition = loopStart + fmod(currentPosition - loopStart, loopEnd - loopStart);
 			updatePositionInCurrentSequence();
 		}
 
-		auto tickThisTime = (numSamples - timeStampForNextCommand) * getTicksPerSample();
+		auto tickThisTime = (numSamples - timeStampForNextCommand) * ticksPerSample;
 		auto lengthInTicks = seq->getLength();
 
 		if (lengthInTicks == 0.0)
@@ -1021,8 +1015,6 @@ void MidiPlayer::preprocessBuffer(HiseEventBuffer& buffer, int numSamples)
 
 		MidiMessage* eventsInThisCallback[16];
 		memset(eventsInThisCallback, 0, sizeof(MidiMessage*) * 16);
-
-		
 
 		while (auto e = seq->getNextEvent(currentRange))
 		{
@@ -1048,12 +1040,10 @@ void MidiPlayer::preprocessBuffer(HiseEventBuffer& buffer, int numSamples)
 
 			auto timeStampInThisBuffer = e->getTimeStamp() - positionInTicks;
 
-			timeStampInThisBuffer;
-
 			if (timeStampInThisBuffer < 0.0)
 				timeStampInThisBuffer += getCurrentSequence()->getTimeSignature().normalisedLoopRange.getLength() * lengthInTicks;
 
-			auto timeStamp = (int)MidiPlayerHelpers::ticksToSamples(timeStampInThisBuffer / playbackSpeed, getMainController()->getBpm(), getSampleRate());
+			auto timeStamp = (int)MidiPlayerHelpers::ticksToSamples(timeStampInThisBuffer, getMainController()->getBpm(), getSampleRate());
 			timeStamp += timeStampForNextCommand;
 
 			jassert(isPositiveAndBelow(timeStamp, numSamples));
@@ -1102,6 +1092,8 @@ void MidiPlayer::preprocessBuffer(HiseEventBuffer& buffer, int numSamples)
 				}
 			}
 		}
+
+
 
 		timeStampForNextCommand = 0;
 		currentPosition += delta;
@@ -1769,7 +1761,7 @@ bool MidiPlayer::saveAsMidiFile(const String& fileName, int trackIndex)
 	return false;
 }
 
-void MidiPlayer::updatePositionInCurrentSequence(bool ignorePlaybackspeed)
+void MidiPlayer::updatePositionInCurrentSequence()
 {
 	if (auto seq = getCurrentSequence())
 	{

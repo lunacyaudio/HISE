@@ -315,6 +315,8 @@ var ScriptingObjects::ScriptFile::loadAsObject() const
 		return v;
 
 	reportScriptError(r.getErrorMessage());
+
+	RETURN_IF_NO_THROW(var());
 }
 
 var ScriptingObjects::ScriptFile::loadEncryptedObject(String key)
@@ -558,7 +560,6 @@ void ScriptingObjects::ScriptDownloadObject::flushTemporaryFile()
 
 		auto numWritten = fos.writeFromInputStream(fis, -1);
 
-        ignoreUnused(numWritten);
 		resumeFile = nullptr;
 	}
 }
@@ -2821,7 +2822,7 @@ void ScriptingObjects::ScriptingAudioSampleProcessor::setFile(String fileName)
 #if USE_BACKEND
 		auto pool = audioSampleProcessor->getMainController()->getCurrentAudioSampleBufferPool();
 
-		if (!pool->areAllFilesLoaded())
+		if (!fileName.contains("{EXP::") && !pool->areAllFilesLoaded())
 			reportScriptError("You must call Engine.loadAudioFilesIntoPool() before using this method");
 #endif
 
@@ -3767,7 +3768,19 @@ void ScriptingObjects::GraphicsObject::drawImage(String imageName, var area, int
 			}
 		}
 		else
-			reportScriptError("Image not found");
+		{
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::setColour(Colours::grey));
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::fillRect(getRectangleFromVar(area)));
+			
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::setColour(Colours::black));
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::drawRect(getRectangleFromVar(area), 1.0f));
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::setFont(GLOBAL_BOLD_FONT()));
+			drawActionHandler.addDrawAction(new ScriptedDrawActions::drawText("XXX", getRectangleFromVar(area), Justification::centred));
+
+			debugError(dynamic_cast<Processor*>(getScriptProcessor()), "Image " + imageName + " not found");
+		}
+			
+			
 	}
 	else
 	{
@@ -4697,7 +4710,7 @@ bool ScriptingObjects::ScriptedLookAndFeel::callWithGraphics(Graphics& g_, const
 		{
 			debugToConsole(dynamic_cast<Processor*>(getScriptProcessor()), errorMessage);
 		}
-		catch (HiseJavascriptEngine::RootObject::Error& e)
+		catch (HiseJavascriptEngine::RootObject::Error& )
 		{
 
 		}
@@ -4736,7 +4749,7 @@ var ScriptingObjects::ScriptedLookAndFeel::callDefinedFunction(const Identifier&
 		{
 			debugToConsole(dynamic_cast<Processor*>(getScriptProcessor()), errorMessage);
 		}
-		catch (HiseJavascriptEngine::RootObject::Error& e)
+		catch (HiseJavascriptEngine::RootObject::Error& )
 		{
 
 		}
@@ -5364,5 +5377,7 @@ juce::ValueTree ApiHelpers::getApiTree()
 	return v;
 }
 #endif
+
+
 
 } // namespace hise

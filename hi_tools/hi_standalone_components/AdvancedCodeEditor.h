@@ -95,7 +95,7 @@ public:
 		void rebuild(const String& tokenText);
 
 		void createVariableRows();
-		void createApiRows(const ValueTree &apiTree, const String& tokenText);
+		void createApiRows(const ValueTree &apiTree);
 		void createObjectPropertyRows(const ValueTree &apiTree, const String &tokenText);
 
 		//void addApiConstants(const ApiClassBase* apiClass, const Identifier &objectId);
@@ -139,9 +139,6 @@ public:
 
 		struct RowInfo
 		{
-            using WeakPtr = WeakReference<RowInfo>;
-            using List = Array<WeakPtr>;
-            
 			enum class Type
 			{
 				ApiClass = 40,
@@ -158,8 +155,6 @@ public:
 			String codeToInsert, name, typeName, value, category;
 			Identifier classId;
 			int type;
-            
-            JUCE_DECLARE_WEAK_REFERENCEABLE(RowInfo);
 		};
 
 		// ================================================================================================================
@@ -174,13 +169,13 @@ public:
 		private:
 
 			AttributedString infoText;
-            RowInfo::WeakPtr currentInfo = nullptr;
+			RowInfo *currentInfo = nullptr;
 		};
 
 		// ================================================================================================================
 
 		OwnedArray<RowInfo> allInfo;
-        RowInfo::List visibleInfo;
+		Array<RowInfo*> visibleInfo;
 		StringArray names;
 		int fontHeight;
 		int currentlySelectedBox = -1;
