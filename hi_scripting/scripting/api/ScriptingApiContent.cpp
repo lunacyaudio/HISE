@@ -1908,6 +1908,11 @@ struct ScriptingApi::Content::ScriptTable::Wrapper
 {
 	API_METHOD_WRAPPER_1(ScriptTable, getTableValue);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, setTablePopupFunction);
+	API_VOID_METHOD_WRAPPER_1(ScriptTable, setTableValueChangedFunction);
+	API_VOID_METHOD_WRAPPER_0(ScriptTable, getNumPoints);
+	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointX);
+	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointY);
+	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointCurve);
 	API_VOID_METHOD_WRAPPER_2(ScriptTable, connectToOtherTable);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, setSnapValues);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, referToData);
@@ -1942,6 +1947,11 @@ lookupTableIndex(-1)
 	ADD_API_METHOD_1(setSnapValues);
 	ADD_API_METHOD_1(referToData);
 	ADD_API_METHOD_1(setTablePopupFunction);
+	ADD_API_METHOD_1(setTableValueChangedFunction);
+	ADD_API_METHOD_0(getNumPoints);
+	ADD_API_METHOD_1(getPointX);
+	ADD_API_METHOD_1(getPointY);
+	ADD_API_METHOD_1(getPointCurve);
 
 	broadcaster.enablePooledUpdate(base->getMainController_()->getGlobalUIUpdater());
 }
@@ -2166,6 +2176,57 @@ void ScriptingApi::Content::ScriptTable::setTablePopupFunction(var newFunction)
 {
 	tableValueFunction = newFunction;
 	getPropertyValueTree().sendPropertyChangeMessage(getIdFor(parameterId));
+}
+
+void ScriptingApi::Content::ScriptTable::setTableValueChangedFunction(var newFunction)
+{
+	tableValueChangedFunction = newFunction;
+	getPropertyValueTree().sendPropertyChangeMessage(getIdFor(parameterId));
+}
+
+int ScriptingApi::Content::ScriptTable::getNumPoints()
+{
+	if (auto t = getTable())
+	{
+		return t->getNumGraphPoints();
+	}
+	return 0;
+}
+
+double ScriptingApi::Content::ScriptTable::getPointX(int pointIndex)
+{
+	if (auto t = getTable())
+	{
+		if (pointIndex < t->getNumGraphPoints()) {
+			DiscreteTable::GraphPoint graphPoint = t->getGraphPoint(pointIndex);
+			return graphPoint.x;
+		}
+	}
+	return 0.0;
+}
+
+double ScriptingApi::Content::ScriptTable::getPointY(int pointIndex)
+{
+	if (auto t = getTable())
+	{
+		if (pointIndex < t->getNumGraphPoints()) {
+			DiscreteTable::GraphPoint graphPoint = t->getGraphPoint(pointIndex);
+			return graphPoint.y;
+		}
+	}
+	return 0.0;
+}
+
+double ScriptingApi::Content::ScriptTable::getPointCurve(int pointIndex)
+{
+	if (auto t = getTable())
+	{
+		if (pointIndex < t->getNumGraphPoints()) {
+			DiscreteTable::GraphPoint graphPoint = t->getGraphPoint(pointIndex);
+			return graphPoint.curve;
+		}
+	}
+	return 0.0;
 }
 
 struct ScriptingApi::Content::ScriptSliderPack::Wrapper

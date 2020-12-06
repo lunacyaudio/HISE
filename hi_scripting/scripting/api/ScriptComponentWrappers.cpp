@@ -1141,6 +1141,18 @@ void ScriptCreatedComponentWrappers::TableWrapper::pointDragStarted(Point<int> p
 void ScriptCreatedComponentWrappers::TableWrapper::pointDragEnded()
 {
 	closeValuePopupAfterDelay();
+
+	ScriptingApi::Content::ScriptTable *st = dynamic_cast<ScriptingApi::Content::ScriptTable*>(getScriptComponent());
+
+	if (HiseJavascriptEngine::isJavascriptFunction(st->tableValueChangedFunction))
+	{
+		if (auto jp = dynamic_cast<JavascriptProcessor*>(st->getScriptProcessor()))
+		{
+			var::NativeFunctionArgs args(st, nullptr, 0);
+			Result r = Result::ok();
+			auto text = jp->getScriptEngine()->callExternalFunction(st->tableValueChangedFunction, args, &r, true);
+		}
+	}
 }
 
 void ScriptCreatedComponentWrappers::TableWrapper::pointDragged(Point<int> position, float pointIndex, float value)
@@ -1163,6 +1175,18 @@ void ScriptCreatedComponentWrappers::TableWrapper::curveChanged(Point<int> posit
 
 	showValuePopup();
 	closeValuePopupAfterDelay();
+
+	ScriptingApi::Content::ScriptTable *st = dynamic_cast<ScriptingApi::Content::ScriptTable*>(getScriptComponent());
+
+	if (HiseJavascriptEngine::isJavascriptFunction(st->tableValueChangedFunction))
+	{
+		if (auto jp = dynamic_cast<JavascriptProcessor*>(st->getScriptProcessor()))
+		{
+			var::NativeFunctionArgs args(st, nullptr, 0);
+			Result r = Result::ok();
+			auto text = jp->getScriptEngine()->callExternalFunction(st->tableValueChangedFunction, args, &r, true);
+		}
+	}
 }
 
 juce::Point<int> ScriptCreatedComponentWrappers::TableWrapper::getValuePopupPosition(Rectangle<int> l) const
