@@ -345,7 +345,6 @@ void MainController::loadPresetInternal(const ValueTree& v)
 				synth->setEditorState(Processor::EditorState::Folded, true);
 
 			changed = false;
-#endif
 
 			auto f = [](Dispatchable* obj)
 			{
@@ -356,11 +355,15 @@ void MainController::loadPresetInternal(const ValueTree& v)
 				p->getMainController()->getSampleManager().setCurrentPreloadMessage("Done...");
 				p->getMainController()->getLockFreeDispatcher().sendPresetReloadMessage();
 
+#if USE_BACKEND
+
+#endif
+
 				return Dispatchable::Status::OK;
 			};
 
-			if(USE_BACKEND || FullInstrumentExpansion::isEnabled(this))
-				getLockFreeDispatcher().callOnMessageThreadAfterSuspension(synthChain, f);
+			getLockFreeDispatcher().callOnMessageThreadAfterSuspension(synthChain, f);
+#endif
 
 			allNotesOff(true);
 		}
@@ -695,9 +698,6 @@ hise::RLottieManager::Ptr MainController::getRLottieManager()
 
 void MainController::processBlockCommon(AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
-	if (getKillStateHandler().getStateLoadFlag())
-		return;
-
 	AudioThreadGuard audioThreadGuard(&getKillStateHandler());
 
 	getSampleManager().handleNonRealtimeState();
@@ -972,7 +972,7 @@ void MainController::processBlockCommon(AudioSampleBuffer &buffer, MidiBuffer &m
 		for (int i = 0; i < osOutput.getNumChannels(); i++)
 			d[i] = osOutput.getChannelPointer(i);
 		
-		thisMultiChannelBuffer.setDataToReferTo(d, osOutput.getNumChannels(), osOutput.getNumSamples());
+		thisMultiChannelBuffer.setDataToReferTo(d, (int)osOutput.getNumChannels(), (int)osOutput.getNumSamples());
 	}
 
 

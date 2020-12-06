@@ -1150,27 +1150,10 @@ bool CompressionHelpers::Misc::validateChecksum(uint32 data)
 	return (uint16)(bytes[0] * bytes[1]) == product;
 }
 
-#define CHECK_FLAG(x) if(!readAndCheckFlag(fis, x)) { if(listener != nullptr) listener->criticalErrorOccured("Read error"); return false; }
+#define CHECK_FLAG(x) if(!readAndCheckFlag(fis, x)) { listener->criticalErrorOccured("Read error"); return false; }
 
-#define VERBOSE_LOG(x) if(listener != nullptr) listener->logVerboseMessage(x);
-#define STATUS_LOG(x) if(listener != nullptr) listener->logStatusMessage(x);
-
-var HlacArchiver::readMetadataFromArchive(const File& sourceFile)
-{
-	ScopedPointer<FileInputStream> fis = new FileInputStream(sourceFile);
-
-	auto flag = readFlag(fis);
-
-	if (flag == Flag::BeginMetadata)
-	{
-		auto obj = JSON::parse(fis->readString());
-
-		if (readFlag(fis) == Flag::EndMetadata)
-			return obj;
-	}
-	
-	return var();
-}
+#define VERBOSE_LOG(x) listener->logVerboseMessage(x)
+#define STATUS_LOG(x) listener->logStatusMessage(x)
 
 bool HlacArchiver::extractSampleData(const DecompressData& data)
 {
@@ -1213,20 +1196,6 @@ bool HlacArchiver::extractSampleData(const DecompressData& data)
 	int partIndex = 1;
 
 	currentFlag = readFlag(fis);
-
-	if (currentFlag == Flag::BeginHeaderFile)
-	{
-		VERBOSE_LOG("    Read Header file");
-
-		auto numBytesForHeaderFile = fis->readInt64();
-		VERBOSE_LOG(String(numBytesForHeaderFile) + String(" bytes"));
-		auto headerTargetFile = data.targetDirectory.getChildFile("header.dat");
-		headerTargetFile.create();
-		ScopedPointer<FileOutputStream> fos = new FileOutputStream(headerTargetFile);
-		fos->writeFromInputStream(*fis, numBytesForHeaderFile);
-		CHECK_FLAG(Flag::EndHeaderFile);
-		currentFlag = readFlag(fis);
-	}
 
 	while (currentFlag == Flag::BeginName)
 	{
@@ -1552,17 +1521,6 @@ void HlacArchiver::compressSampleData(const CompressData& data)
 		ok = fos->writeString(metadataJSON);
 		CHECK_FILE_WRITE_OP;
 		WRITE_FLAG(Flag::EndMetadata);
-
-		if (data.optionalHeaderFile.existsAsFile())
-		{
-			WRITE_FLAG(Flag::BeginHeaderFile);
-			ScopedPointer<FileInputStream> fis = new FileInputStream(data.optionalHeaderFile);
-			auto numBytesToWrite = fis->getTotalLength();
-			fos->writeInt64(numBytesToWrite);
-			ok = fos->writeFromInputStream(*fis, -1);
-			CHECK_FILE_WRITE_OP;
-			WRITE_FLAG(Flag::EndHeaderFile);
-		}
 
 		hlac::HiseLosslessAudioFormat haf;
 

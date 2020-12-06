@@ -39,8 +39,6 @@ using namespace juce;
 
 class ExpansionPathFactory : public PathFactory
 {
-public:
-
 	String getId() const override { return "Expansion Pack"; }
 
 	Path createPath(const String& id) const override
@@ -49,16 +47,9 @@ public:
 
 		Path p;
 
-		LOAD_PATH_IF_URL("filebased", ExpansionIcons::filebased);
-		LOAD_PATH_IF_URL("intermediate", ExpansionIcons::intermediate);
-		LOAD_PATH_IF_URL("encrypted", ExpansionIcons::encrypted);
-		LOAD_PATH_IF_URL("new", HiBinaryData::ProcessorEditorHeaderIcons::addIcon);
-
+		LOAD_PATH_IF_URL("new", EditorIcons::newFile);
 		LOAD_PATH_IF_URL("open", EditorIcons::openFile);
 		LOAD_PATH_IF_URL("rebuild", ColumnIcons::moveIcon);
-
-
-		BACKEND_ONLY(LOAD_PATH_IF_URL("edit", OverlayIcons::penShape));
 		LOAD_PATH_IF_URL("undo", EditorIcons::undoIcon);
 		LOAD_PATH_IF_URL("redo", EditorIcons::redoIcon);
 		LOAD_PATH_IF_URL("encode", SampleMapIcons::monolith);
@@ -76,7 +67,6 @@ ExpansionEditBar::ExpansionEditBar(FloatingTile* parent) :
 	ExpansionPathFactory f;
 
 	buttons.add(new HiseShapeButton("New", this, f));  buttons.getLast()->setTooltip("Create a new expansion pack folder");
-	buttons.add(new HiseShapeButton("Edit", this, f)); buttons.getLast()->setTooltip("Edit the current expansion");
 	buttons.add(new HiseShapeButton("Rebuild", this, f)); buttons.getLast()->setTooltip("Refresh the expansion pack data");
 	buttons.add(new HiseShapeButton("Encode", this, f)); buttons.getLast()->setTooltip("Encode this expansion pack");
 
@@ -195,7 +185,7 @@ struct ExpansionPopupBase : public Component,
 	void paint(Graphics& g) override
 	{
 		auto b = getLocalBounds();
-		auto top = b.removeFromTop(panelHeight).toFloat();
+		b.removeFromTop(panelHeight).toFloat();
 
 		r.draw(g, b.toFloat().reduced(10.0f));
 	}
@@ -203,8 +193,7 @@ struct ExpansionPopupBase : public Component,
 	void resized() override
 	{
 		auto b = getLocalBounds();
-
-		auto top = b.removeFromTop(panelHeight);
+		b.removeFromTop(panelHeight);
 
 		r.setChildComponentBounds(b.reduced(10));
 		r.updateCreatedComponents();
@@ -359,6 +348,7 @@ struct ExpansionEditPopup : public ExpansionPopupBase
 		case Expansion::FileBased: eName = "File based"; break;
 		case Expansion::Intermediate: eName = "Intermediate"; break;
 		case Expansion::Encrypted: eName = "Encrypted"; break;
+        default: jassertfalse; break;
 		}
 
 		auto p = f.createPath(eName);
@@ -446,6 +436,7 @@ public:
 			case Expansion::FileBased: s << "File-Based |\n"; break;
 			case Expansion::Intermediate: s << "Intermediate |\n"; break;
 			case Expansion::Encrypted: s << "Encrypted |\n"; break;
+            default:                   jassertfalse; break;
 			}
 		}
 
@@ -473,14 +464,12 @@ public:
 		s << JSON::toString(mc->getExpansionHandler().getCredentials());
 		s << "```\n\n";
 
-		panelHeight = 50;
-		setMarkdownText(s, 500, 50);
-	}
+	getButton("Rebuild")->setBounds(area.removeFromLeft(widthForIcon));
 
-	TextButton resetButton;
-	TextButton refreshButton;
-};
+	area.removeFromLeft(spacerWidth);
 
+	getButton("Encode")->setBounds(area.removeFromLeft(widthForIcon));
+}
 
 void ExpansionEditBar::buttonClicked(Button* b)
 {
@@ -496,24 +485,18 @@ void ExpansionEditBar::buttonClicked(Button* b)
 			refreshExpansionList();
 		}
 	}
-	if (b->getName() == "Edit")
-	{
-		auto c = new ExpansionEditPopup(getMainController());
-		c->initialise();
-
-		findParentComponentOfClass<FloatingTile>()->showComponentInRootPopup(c, this, b->getBoundsInParent().getCentre().translated(0, 20));
-	}
 	if (b->getName() == "Rebuild")
 	{
-		auto c = new ExpansionHandlerPopup(getMainController());
-		c->initialise();
-
-		findParentComponentOfClass<FloatingTile>()->showComponentInRootPopup(c, this, b->getBoundsInParent().getCentre().translated(0, 20));
+		handler.clearExpansions();
+		handler.createAvailableExpansions();
+		refreshExpansionList();
 	}
 	if (b->getName() == "Encode")
 	{
-		auto m = new ExpansionEncodingWindow(getMainController(), handler.getCurrentExpansion(), false);
-		m->setModalBaseWindowComponent(this);
+		if (auto e = handler.getCurrentExpansion())
+		{
+			e->encodeExpansion();
+		}
 	}
 }
 

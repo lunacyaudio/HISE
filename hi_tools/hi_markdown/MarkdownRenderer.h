@@ -292,11 +292,6 @@ public:
 
 	}
 
-	void setChildComponentBounds(Rectangle<int> renderArea)
-	{
-		childArea = renderArea;
-	}
-
 	void updateCreatedComponents()
 	{
 		if (targetComponent == nullptr)
@@ -305,18 +300,13 @@ public:
 		if (targetComponent->getWidth() == 0)
 			return;
 
-		float y = (float)childArea.getY();
-
-		auto wToUse = childArea.getWidth();
-
-		if (wToUse == 0)
-			wToUse = (int)targetComponent->getWidth();
+		float y = 0.0f;
 
 		for (auto e : elements)
 		{
 			y += e->getTopMargin();
 
-			if (auto c = e->createComponent(wToUse))
+			if (auto c = e->createComponent(targetComponent->getWidth()))
 			{
 				if (c->getParentComponent() == nullptr)
 					targetComponent->addAndMakeVisible(c);
@@ -324,7 +314,7 @@ public:
 				jassert(c->getWidth() > 0);
 				jassert(c->getHeight() > 0);
 
-				c->setTopLeftPosition(childArea.getX(), (int)y);
+				c->setTopLeftPosition(0, (int)y);
 
 				y += (float)e->getLastHeight();
 			}
@@ -398,7 +388,6 @@ private:
 
 	mutable bool firstDraw = true;
 	float lastHeight = -1.0f;
-	Rectangle<int> childArea;
 	float lastWidth = -1.0f;
 };
 

@@ -511,7 +511,7 @@ void StreamingSamplerSound::loopChanged()
 	if (sampleEnd == MAX_SAMPLE_NUMBER && loopEnabled)
 	{
 		fileReader.openFileHandles();
-		sampleEnd = (int)fileReader.getSampleLength();
+		sampleEnd = fileReader.getSampleLength();
 	}
 
 	loopStart = jmax<int>(loopStart, sampleStart);

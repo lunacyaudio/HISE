@@ -1319,7 +1319,7 @@ CompileExporter::ErrorCodes CompileExporter::createPluginDataHeaderFile(const St
     }
     
 	HeaderHelpers::addProjectInfoLines(this, pluginDataHeaderFile);
-	HeaderHelpers::addFullExpansionTypeSetter(this, pluginDataHeaderFile);
+	HeaderHelpers::addCustomToolbarRegistration(this, pluginDataHeaderFile);
 	HeaderHelpers::writeHeaderFile(solutionDirectory, pluginDataHeaderFile);
 
 	return ErrorCodes::OK;
@@ -1342,7 +1342,7 @@ CompileExporter::ErrorCodes CompileExporter::createStandaloneAppHeaderFile(const
     pluginDataHeaderFile << "START_JUCE_APPLICATION(hise::FrontendStandaloneApplication)\n";
 
 	HeaderHelpers::addProjectInfoLines(this, pluginDataHeaderFile);
-	HeaderHelpers::addFullExpansionTypeSetter(this, pluginDataHeaderFile);
+	HeaderHelpers::addCustomToolbarRegistration(this, pluginDataHeaderFile);
 	HeaderHelpers::writeHeaderFile(solutionDirectory, pluginDataHeaderFile);
 
 	return ErrorCodes::OK;
@@ -1727,9 +1727,7 @@ void CompileExporter::ProjectTemplateHelpers::handleCompilerInfo(CompileExporter
 
 	auto& dataObject = exporter->dataObject;
 
-	auto expansionType = GET_SETTING(HiseSettings::Project::ExpansionType);
-
-	if (expansionType == "Custom" || expansionType == "Full")
+	if (GET_SETTING(HiseSettings::Project::ExpansionType) == "Custom")
 	{
 		REPLACE_WILDCARD_WITH_STRING("%USE_CUSTOM_EXPANSION_TYPE%", "1");
 	}
@@ -2177,7 +2175,9 @@ void CompileExporter::BatchFileCreator::createBatchFile(CompileExporter* exporte
 	case CompileExporter::TargetTypes::InstrumentPlugin: projectType = "Instrument plugin"; break;
 	case CompileExporter::TargetTypes::EffectPlugin: projectType = "FX plugin"; break;
 	case CompileExporter::TargetTypes::StandaloneApplication: projectType = "Standalone application"; break;
-    case CompileExporter::TargetTypes::numTargetTypes: break;
+    case CompileExporter::TargetTypes::MidiEffectPlugin: projectType = "MIDI FX plugin"; break;
+    case CompileExporter::TargetTypes::numTargetTypes:
+        default:                                        break;
 	}
 
 #if JUCE_WINDOWS
@@ -2548,11 +2548,8 @@ void CompileExporter::HeaderHelpers::addCopyProtectionHeaderLines(const String &
 	}
 }
 
-void CompileExporter::HeaderHelpers::addFullExpansionTypeSetter(CompileExporter* exporter, String& pluginDataHeaderFile)
-{
-	if (FullInstrumentExpansion::isEnabled(exporter->chainToExport->getMainController()))
-		pluginDataHeaderFile << "\nSET_CUSTOM_EXPANSION_TYPE(FullInstrumentExpansion);\n";
-}
+void CompileExporter::HeaderHelpers::addCustomToolbarRegistration(CompileExporter* /*exporter*/, String& /*pluginDataHeaderFile*/)
+{}
 
 void CompileExporter::HeaderHelpers::addProjectInfoLines(CompileExporter* exporter, String& pluginDataHeaderFile)
 {
@@ -2561,8 +2558,6 @@ void CompileExporter::HeaderHelpers::addProjectInfoLines(CompileExporter* export
 	const String projectName = exporter->GET_SETTING(HiseSettings::Project::Name);
 	const String versionString = exporter->GET_SETTING(HiseSettings::Project::Version);
 	const String appGroupString = exporter->GET_SETTING(HiseSettings::Project::AppGroupID);
-	const String expType = exporter->GET_SETTING(HiseSettings::Project::ExpansionType);
-	const String expKey = exporter->GET_SETTING(HiseSettings::Project::EncryptionKey);
 
 	pluginDataHeaderFile << "String hise::FrontendHandler::getProjectName() { return \"" << projectName << "\"; };\n";
 	pluginDataHeaderFile << "String hise::FrontendHandler::getCompanyName() { return \"" << companyName << "\"; };\n";
@@ -2570,8 +2565,6 @@ void CompileExporter::HeaderHelpers::addProjectInfoLines(CompileExporter* export
 	pluginDataHeaderFile << "String hise::FrontendHandler::getVersionString() { return \"" << versionString << "\"; };\n";
     
     pluginDataHeaderFile << "String hise::FrontendHandler::getAppGroupId() { return \"" << appGroupString << "\"; };\n";
-    
-	pluginDataHeaderFile << "String hise::FrontendHandler::getExpansionKey() { return \"" << expKey << "\"; };\n";
 }
 
 void CompileExporter::HeaderHelpers::writeHeaderFile(const String & solutionDirectory, const String& pluginDataHeaderFile)

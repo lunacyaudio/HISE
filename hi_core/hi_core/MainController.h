@@ -245,11 +245,6 @@ public:
 			nonRealtime = shouldBeNonRealtime;
 		}
 
-		String getPreloadMessage() const
-		{
-			return currentPreloadMessage;
-		}
-
 	private:
 
 		bool nonRealtime = false;
@@ -1478,11 +1473,6 @@ public:
 		currentPreview = p;
 	}
 
-	void setDefaultPresetHandler(ControlledObject* ownedHandler)
-	{
-		defaultPresetHandler = ownedHandler;
-	}
-
 	MarkdownContentProcessor* getCurrentMarkdownPreview()
 	{
 		return currentPreview;
@@ -1730,8 +1720,6 @@ private:
     std::atomic<double> temp_usage;
 	int scrollY;
 	BigInteger shownComponents;
-
-	ScopedPointer<ControlledObject> defaultPresetHandler;
 
 	void handleSuspendedNoteOffs();
 public:

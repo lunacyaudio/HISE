@@ -640,7 +640,7 @@ public:
 
 	void setActiveEditor(JavascriptCodeEditor* e, CodeDocument::Position pos) override;
 
-	int getCodeFontSize() const override { return (int)dynamic_cast<const Processor*>(this)->getMainController()->getGlobalCodeFontSize(); }
+	int getCodeFontSize() const override { return dynamic_cast<const Processor*>(this)->getMainController()->getGlobalCodeFontSize(); }
 
 	
 
@@ -687,11 +687,7 @@ public:
 
 	void restoreInterfaceData(ValueTree propertyData);
 
-	String collectScript(bool silent) const;
-
-	String getBase64CompressedScript(bool silent=false) const;
-
-	
+	String getBase64CompressedScript() const;
 
 	bool restoreBase64CompressedScript(const String &base64compressedScript);
 

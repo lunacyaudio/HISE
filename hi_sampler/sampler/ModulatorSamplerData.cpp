@@ -932,13 +932,9 @@ void MonolithExporter::run()
 		return;
 	}
 
-	PoolReference ref(sampleMap->getSampler()->getMainController(), sampleMapFile.getFullPathName(), ProjectHandler::SampleMaps);
+	auto name = sampleMapFile.getRelativePathFrom(sampleMapDirectory).upToFirstOccurrenceOf(".xml", false, true);
 
-	auto name = ref.getReferenceString().fromFirstOccurrenceOf("}", false, false).upToFirstOccurrenceOf(".xml", false, true);
-
-	//auto name = sampleMapFile.getRelativePathFrom(sampleMapDirectory).upToFirstOccurrenceOf(".xml", false, true);
-
-	//name = name.replace(File::getSeparatorString(), "/");
+	name = name.replace(File::getSeparatorString(), "/");
 
 	sampleMap->setId(name);
 

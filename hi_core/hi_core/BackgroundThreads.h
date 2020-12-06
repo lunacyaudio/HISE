@@ -526,7 +526,6 @@ private:
 	String fullLog;
 	String criticalError;
 
-	ScopedPointer<FilenameComponent> hxiFile;
 	ScopedPointer<FilenameComponent> targetFile;
 	ScopedPointer<ProgressBar> totalProgressBar;
 	double totalProgress = 0.0;

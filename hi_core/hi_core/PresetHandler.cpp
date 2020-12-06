@@ -534,8 +534,6 @@ void PresetHandler::saveProcessorAsPreset(Processor *p, const String &directoryP
         
         v.setProperty("BuildVersion", BUILD_SUB_VERSION, nullptr);
 
-		FullInstrumentExpansion::setNewDefault(p->getMainController(), v);
-
 		outputFile.deleteFile();
 
 		FileOutputStream fos(outputFile);
@@ -1176,7 +1174,7 @@ juce::File FrontendHandler::getSubDirectory(SubDirectories directory) const
 	case hise::FileHandlerBase::numSubDirectories:
 	case hise::FileHandlerBase::MidiFiles:
 		jassertfalse;
-		break;
+		break; 
 	case hise::FileHandlerBase::UserPresets:
 		return getRootFolder().getChildFile("User Presets");
 	case hise::FileHandlerBase::Samples:
@@ -2083,9 +2081,6 @@ void PresetHandler::checkMetaParameters(Processor* p)
 
 				auto checkAsExpected = [](DynamicObject* obj, ScriptComponent* c)
 				{
-					auto ev = (double)obj->getProperty(c->getName());
-					auto v = (double)c->getValue();
-
 					auto expectedValue = obj->getProperty(c->getName());
 
 					if (expectedValue != c->getValue())
@@ -2921,14 +2916,17 @@ juce::Image MessageWithIcon::LookAndFeelMethods::createIcon(PresetHandler::IconT
 	{
 	case PresetHandler::IconType::Info: return ImageCache::getFromMemory(
 		BinaryData::infoInfo_png, BinaryData::infoInfo_pngSize);
+		break;
 	case PresetHandler::IconType::Warning: return ImageCache::getFromMemory(BinaryData::infoWarning_png, BinaryData::infoWarning_pngSize);
+		break;
 	case PresetHandler::IconType::Question: return ImageCache::getFromMemory(BinaryData::infoQuestion_png, BinaryData::infoQuestion_pngSize);
+		break;
 	case PresetHandler::IconType::Error: return ImageCache::getFromMemory(BinaryData::infoError_png, BinaryData::infoError_pngSize);
-	case PresetHandler::IconType::numIconTypes: 
+		break;
+	case PresetHandler::IconType::numIconTypes: return Image(); jassertfalse;
+		break;
 	default:
-		jassertfalse;
-		return Image(); 
-		
+		break;
 	}
 }
 

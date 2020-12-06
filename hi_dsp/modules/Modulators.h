@@ -1001,7 +1001,7 @@ private:
 			auto bMod = index - bIndex;
 			auto before = data[bIndex];
 
-			data[bIndex] = before & ~(uint64)((1 << bMod));
+			data[bIndex] = before & ~(uint64)((uint64)(1) << bMod);
 
 			if(before != data[bIndex])
 				numBitsSet = jmax(0, numBitsSet - 1);
@@ -1013,7 +1013,7 @@ private:
 			auto bMod = index - bIndex;
 			auto before = data[bIndex];
 
-			data[bIndex] = before | (uint64)((1 << bMod));
+			data[bIndex] = before | (static_cast<uint64>(1) << bMod);
 
 			if(before != data[bIndex])
 				numBitsSet++;
