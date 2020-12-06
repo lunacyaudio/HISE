@@ -1909,10 +1909,10 @@ struct ScriptingApi::Content::ScriptTable::Wrapper
 	API_METHOD_WRAPPER_1(ScriptTable, getTableValue);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, setTablePopupFunction);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, setTableValueChangedFunction);
-	API_VOID_METHOD_WRAPPER_0(ScriptTable, getNumPoints);
-	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointX);
-	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointY);
-	API_VOID_METHOD_WRAPPER_1(ScriptTable, getPointCurve);
+	API_METHOD_WRAPPER_0(ScriptTable, getNumPoints);
+	API_METHOD_WRAPPER_1(ScriptTable, getPointX);
+	API_METHOD_WRAPPER_1(ScriptTable, getPointY);
+	API_METHOD_WRAPPER_1(ScriptTable, getPointCurve);
 	API_VOID_METHOD_WRAPPER_2(ScriptTable, connectToOtherTable);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, setSnapValues);
 	API_VOID_METHOD_WRAPPER_1(ScriptTable, referToData);
