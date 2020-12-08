@@ -105,7 +105,7 @@ void MacroControlledObject::enableMidiLearnWithPopup()
 		auto value = getProcessor()->getMainController()->getMacroManager().getMidiControlAutomationHandler()->getMidiControllerNumber(processor, parameter);
 
 		PopupMenu s;
-		for (int i = 1; i < 127; i++)
+		for (int i = 1; i < 128; i++)
 			s.addItem(i + MidiOffset, "CC #" + String(i), true, i == value);
 
 		m.addSubMenu("Assign MIDI CC", s, true);
