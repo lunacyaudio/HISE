@@ -41,12 +41,12 @@ thisAsProcessor(dynamic_cast<Processor*>(p))
 
 ProcessorWithScriptingContent *ScriptingObject::getScriptProcessor()
 {
-	return processor;
+	return processor.get();
 };
 
 const ProcessorWithScriptingContent *ScriptingObject::getScriptProcessor() const
 {
-	return processor;
+	return processor.get();
 };
 
 
@@ -504,7 +504,9 @@ WeakCallbackHolder::WeakCallbackHolder(WeakCallbackHolder&& other):
 WeakCallbackHolder::~WeakCallbackHolder()
 {
 	decRefCount();
-	getScriptProcessor()->getMainController_()->removeScriptListener(this);
+
+	if(auto sp = getScriptProcessor())
+		sp->getMainController_()->removeScriptListener(this);
 }
 
 hise::WeakCallbackHolder& WeakCallbackHolder::operator=(WeakCallbackHolder&& other)
@@ -521,7 +523,9 @@ hise::WeakCallbackHolder& WeakCallbackHolder::operator=(WeakCallbackHolder&& oth
 
 void WeakCallbackHolder::clear()
 {
-	getScriptProcessor()->getMainController_()->removeScriptListener(this);
+	if(auto sp = getScriptProcessor())
+		sp->getMainController_()->removeScriptListener(this);
+
 	weakCallback = nullptr;
 	anonymousFunctionRef = var();
 }
