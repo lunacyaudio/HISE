@@ -359,7 +359,7 @@ void DynamicsEffect::updateMakeupValues(bool updateLimiter)
 		{
 			auto attenuation = compressor.getThresh();
 			auto ratio = compressor.getRatio();
-			auto gainDb = (1.0 - ratio) * attenuation * -1.0;
+			auto gainDb = (1.0 - ratio) * (attenuation * -1.0) * 0.7;
 
 			compressorMakeupGain = (float)Decibels::decibelsToGain(gainDb);
 		}
