@@ -49,6 +49,8 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
+#define JUCE_PROJUCER_VERSION 0x50407
+
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_hi_backend                  1
 #define JUCE_MODULE_AVAILABLE_hi_components               1
@@ -106,7 +108,7 @@
 #endif
 
 #ifndef    USE_IPP
- #define   USE_IPP 1
+ #define   USE_IPP 0
 #endif
 
 #ifndef    USE_VDSP_FFT
@@ -157,10 +159,6 @@
  //#define CRASH_ON_GLITCH 0
 #endif
 
-#ifndef    HISE_ENABLE_EXPANSIONS
- #define   HISE_ENABLE_EXPANSIONS 1
-#endif
-
 #ifndef    ENABLE_SCRIPTING_BREAKPOINTS
  #define   ENABLE_SCRIPTING_BREAKPOINTS 1
 #endif
@@ -182,7 +180,7 @@
 #endif
 
 #ifndef    ENABLE_STARTUP_LOGGER
- //#define ENABLE_STARTUP_LOGGER 0
+ #define   ENABLE_STARTUP_LOGGER 1
 #endif
 
 #ifndef    HISE_MAX_PROCESSING_BLOCKSIZE
@@ -201,12 +199,16 @@
  //#define USE_SPLASH_SCREEN 0
 #endif
 
+#ifndef    HISE_USE_CUSTOM_EXPANSION_TYPE
+ //#define HISE_USE_CUSTOM_EXPANSION_TYPE 0
+#endif
+
 #ifndef    HISE_SAMPLE_DIALOG_SHOW_INSTALL_BUTTON
- //#define HISE_SAMPLE_DIALOG_SHOW_INSTALL_BUTTON 1
+ #define   HISE_SAMPLE_DIALOG_SHOW_INSTALL_BUTTON 0
 #endif
 
 #ifndef    HISE_SAMPLE_DIALOG_SHOW_LOCATE_BUTTON
- //#define HISE_SAMPLE_DIALOG_SHOW_LOCATE_BUTTON 1
+ #define   HISE_SAMPLE_DIALOG_SHOW_LOCATE_BUTTON 0
 #endif
 
 //==============================================================================
@@ -250,7 +252,7 @@
 // hi_scripting flags:
 
 #ifndef    INCLUDE_BIG_SCRIPTNODE_OBJECT_COMPILATION
- //#define INCLUDE_BIG_SCRIPTNODE_OBJECT_COMPILATION 1
+ #define   INCLUDE_BIG_SCRIPTNODE_OBJECT_COMPILATION 0
 #endif
 
 //==============================================================================
@@ -502,7 +504,7 @@
 // juce_gui_extra flags:
 
 #ifndef    JUCE_WEB_BROWSER
- //#define JUCE_WEB_BROWSER 1
+ #define   JUCE_WEB_BROWSER 1
 #endif
 
 #ifndef    JUCE_ENABLE_LIVE_CONSTANT_EDITOR
