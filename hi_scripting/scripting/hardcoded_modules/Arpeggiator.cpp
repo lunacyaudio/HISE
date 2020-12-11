@@ -396,13 +396,28 @@ void Arpeggiator::onNoteOn()
 
 		addUserHeldKey(newNote);
 
-		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000)))
+		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000) * 0.95))
 		{
 			// Here we land if the chord mode has just been started but the
 			// arp is already playing, so we need to manually play the note.
-			newNote += (int8)semiToneSliderPack->getSliderValueAt(currentStep);
+			newNote += (int8)semiToneSliderPack->getSliderValueAt(0);
 			int thisId = sendNoteOnInternal(newNote);
 			Synth.noteOffDelayedByEventId(thisId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
+
+			const int tempOctaveRaw = (int)octaveSlider->getValue();
+			const int tempOctaveSign = tempOctaveRaw >= 0 ? 1 : -1;
+			auto tempOctaveAmount = abs(tempOctaveRaw) + 1;
+
+			if (tempOctaveRaw != 0) 
+			{
+				for (int i = 0; i < tempOctaveAmount; i++)
+				{
+					int thisIdOctave = sendNoteOnInternal(newNote + (int8)(tempOctaveSign * i * 12));
+					Synth.noteOffDelayedByEventId(thisIdOctave, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
+				}
+				
+			}
+
 
 			additionalChordStartKeys.add(thisId);
 		}
