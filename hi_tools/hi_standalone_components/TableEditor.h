@@ -460,6 +460,8 @@ public:
 		/** Called when the user changes a curve. The position will be the middle between the points. */
 		virtual void curveChanged(Point<int> position, float curveValue) = 0;
 
+		virtual void tableUpdated() = 0;
+
 	private:
 
 		JUCE_DECLARE_WEAK_REFERENCEABLE(Listener);
@@ -941,6 +943,14 @@ private:
 		if(refreshLookUpTable)
 		{
 			if(editedTable.get() != nullptr) editedTable->fillLookUpTable();
+		}
+
+		for (auto l : listeners)
+		{
+			if (l.get() != nullptr)
+			{
+				l->tableUpdated();
+			}
 		}
 	};
 

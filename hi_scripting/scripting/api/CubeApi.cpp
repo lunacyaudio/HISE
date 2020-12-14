@@ -14,7 +14,7 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
     ADD_API_METHOD_4(setLfo);
     ADD_API_METHOD_3(setLfoRange);
     ADD_API_METHOD_1(setEmptyPath);
-    ADD_API_METHOD_5(addPathKeyframe);
+    ADD_API_METHOD_4(addPathKeyframe);
     ADD_API_METHOD_3(setOrbitRotation);
     ADD_API_METHOD_3(setOrbitMirror);
     ADD_API_METHOD_1(setOrbitIntensity);
@@ -23,6 +23,7 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
     ADD_API_METHOD_1(setEther);
     ADD_API_METHOD_2(setCornerData);
     ADD_API_METHOD_1(setCornerButtonCallback);
+    ADD_API_METHOD_1(setOrbDragCallback);
 }
 
 CubeApi::~CubeApi() {}
@@ -112,8 +113,7 @@ void CubeApi::setEmptyPath(int axis) {
     orbitAxis->path.keyframes.clear();
 }
 
-void CubeApi::addPathKeyframe(int axis, float time, float pos,
-                              bool easeIn, bool easeOut) {
+void CubeApi::addPathKeyframe(int axis, float time, float pos, float curve) {
     Orbit::Axis* orbitAxis = getAxis(axis);
     if (orbitAxis == nullptr) {
         return;
@@ -121,8 +121,7 @@ void CubeApi::addPathKeyframe(int axis, float time, float pos,
     Orbit::Path::Keyframe keyframe;
     keyframe.time = time;
     keyframe.pos = pos;
-    keyframe.easeIn = easeIn;
-    keyframe.easeOut = easeOut;
+    keyframe.curve = curve;
     orbitAxis->path.keyframes.push_back(keyframe);
 }
 
@@ -184,6 +183,29 @@ void CubeApi::setCornerButtonCallback(var callback) {
             var thisObject(this);
             var data[2] = { var(id), var(button) };
             var::NativeFunctionArgs args(thisObject, data, 2);
+            Result result = Result::ok();
+            engine->maximumExecutionTime = RelativeTime(0.5);
+            engine->callExternalFunction(callback, args, &result);
+        };
+}
+
+void CubeApi::setOrbDragCallback(var callback) {
+    if (!HiseJavascriptEngine::isJavascriptFunction(callback)) {
+        return;
+    }
+
+    auto* engine = dynamic_cast<JavascriptMidiProcessor*>(
+        getScriptProcessor())->getScriptEngine();
+    if (engine == nullptr) {
+        return;
+    }
+
+    Cube& cube = getCubeData();
+    cube.orbDragCallback =
+        [this, engine, callback](float x, float y, float z) {
+            var thisObject(this);
+            var data[3] = { var(x), var(y), var(z) };
+            var::NativeFunctionArgs args(thisObject, data, 3);
             Result result = Result::ok();
             engine->maximumExecutionTime = RelativeTime(0.5);
             engine->callExternalFunction(callback, args, &result);

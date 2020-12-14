@@ -25,8 +25,7 @@ struct Orbit {
         struct Keyframe {
             float time = 0;
             float pos = 0;
-            bool easeIn = false;
-            bool easeOut = false;
+            float curve = 0.5f;
         };
         std::vector<Keyframe> keyframes;
     };
@@ -62,8 +61,16 @@ struct Cube {
     Orbit orbit = {};
     float ether = 0;
     std::map<String, var> cornerData = {};
+
+    // JS callback invoked when a corner overlay button has been clicked.
+    //  - id: corner ID
+    //  - button: string identifying the button that was clicked
     std::function<void(String, String)> cornerButtonCallback =
         [](String id, String button) {};
+
+    // JS callback invoked when the orb has been dragged.
+    std::function<void(float, float, float)> orbDragCallback =
+        [](float x, float y, float z) {};
 };
 
 // The Cube Javascript API.
@@ -95,7 +102,7 @@ public:
         API_VOID_METHOD_WRAPPER_4(CubeApi, setLfo);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setLfoRange);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEmptyPath);
-        API_VOID_METHOD_WRAPPER_5(CubeApi, addPathKeyframe);
+        API_VOID_METHOD_WRAPPER_4(CubeApi, addPathKeyframe);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitRotation);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitMirror);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
@@ -104,6 +111,7 @@ public:
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEther);
         API_VOID_METHOD_WRAPPER_2(CubeApi, setCornerData);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setCornerButtonCallback);
+        API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbDragCallback);
 	};
 
     void setOrbPosition(float x, float y, float z);
@@ -114,7 +122,7 @@ public:
     void setLfo(int axis, String waveType, float frequency, float phaseOffset);
     void setLfoRange(int axis, float min, float max);
     void setEmptyPath(int axis);
-    void addPathKeyframe(int axis, float time, float pos, bool easeIn, bool easeOut);
+    void addPathKeyframe(int axis, float time, float pos, float curve);
     void setOrbitRotation(float x, float y, float z);
     void setOrbitMirror(bool x, bool y, bool z);
     void setOrbitIntensity(float intensity);
@@ -125,6 +133,7 @@ public:
     void setEther(float ether);
     void setCornerData(String id, var data);
     void setCornerButtonCallback(var callback);
+    void setOrbDragCallback(var callback);
 
 	Identifier getObjectName() const override { RETURN_STATIC_IDENTIFIER("CubeApi"); }
     static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
