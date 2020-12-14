@@ -129,7 +129,7 @@ struct StereoChannelData
 // This is the maximum value for sample pitch manipulation (this means 3 octaves, which should be more than enough
 #define MAX_SAMPLER_PITCH 16
 #else
-#define MAX_SAMPLER_PITCH 40
+#define MAX_SAMPLER_PITCH 64
 #endif
 
 // This is the default preload size. I defined a pretty random value here, but you can change this dynamically.
