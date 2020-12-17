@@ -1707,8 +1707,7 @@ void ScriptCreatedComponentWrappers::PanelWrapper::subComponentRemoved(ScriptCom
 		if (childPanelWrappers[i]->getScriptComponent() == componentAboutToBeRemoved)
 		{
 			bpc->removeChildComponent(childPanelWrappers[i]->getComponent());
-			childPanelWrappers.remove(i);
-			return;
+			childPanelWrappers.remove(i--);
 		}
 	}
 }
@@ -1880,16 +1879,14 @@ public:
 
 	SamplerListener(ModulatorSampler* s_, SamplerSoundWaveform* waveform_) :
 		s(s_),
+		samplemap(s->getSampleMap()),
 		waveform(waveform_)
 	{
-		s->getSampleMap()->addListener(this);
-
+		samplemap->addListener(this);
 		s->addChangeListener(this);
 
 		if (auto v = s->getLastStartedVoice())
-		{
 			lastSound = v->getCurrentlyPlayingSound();
-		}
 	}
 
 	~SamplerListener()
@@ -1897,18 +1894,26 @@ public:
 		lastSound = nullptr;
 
 		if (s != nullptr)
-		{
-			s->getSampleMap()->removeListener(this);
 			s->removeChangeListener(this);
-		}
+
+		if (samplemap.get() != nullptr)
+			samplemap->removeListener(this);
 	}
 
 	void refreshAfterSampleMapChange()
 	{
 		if (displayedIndex != -1)
 		{
-			if(auto newSound =  s->getSound(displayedIndex))
+			if (auto newSound = s->getSound(displayedIndex))
+			{
 				waveform->setSoundToDisplay(dynamic_cast<ModulatorSamplerSound*>(newSound), 0);
+				lastSound = newSound;
+			}
+			else
+			{
+				waveform->setSoundToDisplay(nullptr, 0);
+				lastSound = nullptr;
+			}
 		}
 	}
 
@@ -1954,7 +1959,8 @@ public:
 	int displayedIndex = -1;
 
     bool active = true;
-	ModulatorSampler* s;
+	WeakReference<ModulatorSampler> s;
+	WeakReference<SampleMap> samplemap;
 	Component::SafePointer<SamplerSoundWaveform> waveform;
 	SynthesiserSound::Ptr lastSound;
 
