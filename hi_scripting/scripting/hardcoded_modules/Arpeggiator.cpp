@@ -218,7 +218,7 @@ void Arpeggiator::onInit()
 	
 	
 	lengthSliderPack = Content.addSliderPack("LengthSliderPack", 160, 290);
-	lengthSliderPack->getSliderPackData()->setDefaultValue(0.75);
+	lengthSliderPack->getSliderPackData()->setDefaultValue(100.0);
 
 	lengthSliderPack->set("width", 512);
 	lengthSliderPack->set("max", 100);
@@ -325,7 +325,7 @@ void Arpeggiator::onInit()
 	keyRangeHi->set("stepSize", "1");
 	keyRangeHi->set("middlePosition", 60);
 
-	parameterNames.add("keyRangeHi");
+	parameterNames.add("KeyRangeHi");
 
 	sustainHold = Content.addButton("Hold", 85, 70);
 	
@@ -389,47 +389,48 @@ void Arpeggiator::onNoteOn()
 		Message.ignoreEvent(true);
 
 	// added key range limits
-	if ((int)Message.getNoteNumber() >= (int)keyRangeLo->getValue() && (int)Message.getNoteNumber() <= (int)keyRangeHi->getValue()) {
-		minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
+	if ((int)Message.getNoteNumber() <= (int)keyRangeLo->getValue() && (int)Message.getNoteNumber() >= (int)keyRangeHi->getValue())
+		Message.ignoreEvent(true);
 
-		NoteWithChannel newNote = { (int8)Message.getNoteNumber(), (int8)Message.getChannel() };
+	minNoteLenSamples = (int)(Engine.getSampleRate() / 80.0);
 
-		addUserHeldKey(newNote);
+	NoteWithChannel newNote = { (int8)Message.getNoteNumber(), (int8)Message.getChannel() };
 
-		if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000) * 0.95))
+	addUserHeldKey(newNote);
+
+	if (is_playing && currentDirection == Direction::Chord && (Engine.getUptime() - chordStartUptime < (double)(Engine.getMilliSecondsForSamples(currentNoteLengthInSamples) / 1000) * 0.95))
+	{
+		// Here we land if the chord mode has just been started but the
+		// arp is already playing, so we need to manually play the note.
+		newNote += (int8)semiToneSliderPack->getSliderValueAt(0);
+		int thisId = sendNoteOnInternal(newNote);
+		Synth.noteOffDelayedByEventId(thisId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
+
+		const int tempOctaveRaw = (int)octaveSlider->getValue();
+		const int tempOctaveSign = tempOctaveRaw >= 0 ? 1 : -1;
+		auto tempOctaveAmount = abs(tempOctaveRaw) + 1;
+
+		if (tempOctaveRaw != 0) 
 		{
-			// Here we land if the chord mode has just been started but the
-			// arp is already playing, so we need to manually play the note.
-			newNote += (int8)semiToneSliderPack->getSliderValueAt(0);
-			int thisId = sendNoteOnInternal(newNote);
-			Synth.noteOffDelayedByEventId(thisId, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
-
-			const int tempOctaveRaw = (int)octaveSlider->getValue();
-			const int tempOctaveSign = tempOctaveRaw >= 0 ? 1 : -1;
-			auto tempOctaveAmount = abs(tempOctaveRaw) + 1;
-
-			if (tempOctaveRaw != 0) 
+			for (int i = 0; i < tempOctaveAmount; i++)
 			{
-				for (int i = 0; i < tempOctaveAmount; i++)
-				{
-					int thisIdOctave = sendNoteOnInternal(newNote + (int8)(tempOctaveSign * i * 12));
-					Synth.noteOffDelayedByEventId(thisIdOctave, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
-				}
-				
+				int thisIdOctave = sendNoteOnInternal(newNote + (int8)(tempOctaveSign * i * 12));
+				Synth.noteOffDelayedByEventId(thisIdOctave, jmax<int>(minNoteLenSamples, currentNoteLengthInSamples));
 			}
-
-
-			additionalChordStartKeys.add(thisId);
+			
 		}
 
-		// do not call playNote() if timer is already running
-		if (!is_playing)
-		{
-			if (currentDirection == Direction::Chord)
-				chordStartUptime = Engine.getUptime();
 
-			playNote();
-		}
+		additionalChordStartKeys.add(thisId);
+	}
+
+	// do not call playNote() if timer is already running
+	if (!is_playing)
+	{
+		if (currentDirection == Direction::Chord)
+			chordStartUptime = Engine.getUptime();
+
+		playNote();
 	}
 }
 
