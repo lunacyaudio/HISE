@@ -289,7 +289,7 @@
 #endif
 
 #ifndef    JUCE_DIRECTSOUND
- #define   JUCE_DIRECTSOUND 1
+ //#define JUCE_DIRECTSOUND 1
 #endif
 
 #ifndef    JUCE_ALSA
