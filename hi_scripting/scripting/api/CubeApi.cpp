@@ -30,18 +30,18 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
 CubeApi::~CubeApi() {}
 
 Cube CubeApi::getCubeData(const MainController* mc) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     return getCubeDataUnsafe(mc);
 }
 
 void CubeApi::removeCubeData(const MainController* mc) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     cubes.erase(mc);
 }
 
 void CubeApi::setOrbPosition(const MainController* mc,
                              float x, float y, float z) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeDataUnsafe(mc);
     cube.orb.x = x;
     cube.orb.y = y;
@@ -49,7 +49,7 @@ void CubeApi::setOrbPosition(const MainController* mc,
 }
 
 void CubeApi::setOrbPosition(float x, float y, float z) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orb.x = x;
     cube.orb.y = y;
@@ -57,7 +57,7 @@ void CubeApi::setOrbPosition(float x, float y, float z) {
 }
 
 Array<var> CubeApi::getOrbPosition() {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     Array<var> orbPosition;
     orbPosition.add(cube.orb.x);
@@ -67,38 +67,38 @@ Array<var> CubeApi::getOrbPosition() {
 }
 
 void CubeApi::setOrbTime(float t) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orb.orbitTime = t;
 }
 
 void CubeApi::showOrbit() {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.visible = true;
 }
 
 void CubeApi::hideOrbit() {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.visible = false;
 }
 
 void CubeApi::enableDragging() {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.draggingEnabled = true;
 }
 
 void CubeApi::disableDragging() {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.draggingEnabled = false;
 }
 
 void CubeApi::setLfo(int axis, String waveType, float frequency,
                      float phaseOffset) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Orbit::Axis* orbitAxis = getAxis(axis);
     if (orbitAxis == nullptr) {
         return;
@@ -124,7 +124,7 @@ void CubeApi::setLfo(int axis, String waveType, float frequency,
 }
 
 void CubeApi::setLfoRange(int axis, float min, float max) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Orbit::Axis* orbitAxis = getAxis(axis);
     if (orbitAxis == nullptr) {
         return;
@@ -134,7 +134,7 @@ void CubeApi::setLfoRange(int axis, float min, float max) {
 }
 
 void CubeApi::setEmptyPath(int axis) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Orbit::Axis* orbitAxis = getAxis(axis);
     if (orbitAxis == nullptr) {
         return;
@@ -144,7 +144,7 @@ void CubeApi::setEmptyPath(int axis) {
 }
 
 void CubeApi::addPathKeyframe(int axis, float time, float pos, float curve) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Orbit::Axis* orbitAxis = getAxis(axis);
     if (orbitAxis == nullptr) {
         return;
@@ -157,7 +157,7 @@ void CubeApi::addPathKeyframe(int axis, float time, float pos, float curve) {
 }
 
 void CubeApi::setOrbitRotation(float x, float y, float z) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.rotation.x = x;
     cube.orbit.rotation.y = y;
@@ -165,7 +165,7 @@ void CubeApi::setOrbitRotation(float x, float y, float z) {
 }
 
 void CubeApi::setOrbitMirror(bool x, bool y, bool z) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.mirror.x = x;
     cube.orbit.mirror.y = y;
@@ -173,13 +173,13 @@ void CubeApi::setOrbitMirror(bool x, bool y, bool z) {
 }
 
 void CubeApi::setOrbitIntensity(float intensity) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orbit.intensity = intensity;
 }
 
 void CubeApi::setRippleAmount(int id, float rippleAmount) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     if (id < cube.orb.rippleAmounts.size()) {
         cube.orb.rippleAmounts[id] = rippleAmount;
@@ -187,25 +187,25 @@ void CubeApi::setRippleAmount(int id, float rippleAmount) {
 }
 
 void CubeApi::setWiggleAmount(float wiggleAmount) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.orb.wiggleAmount = wiggleAmount;
 }
 
 void CubeApi::setEther(float ether) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.ether = ether;
 }
 
 void CubeApi::setCornerData(String id, var data) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     Cube& cube = getCubeData();
     cube.cornerData[id] = data;
 }
 
 void CubeApi::setCornerButtonCallback(var callback) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     if (!HiseJavascriptEngine::isJavascriptFunction(callback)) {
         return;
     }
@@ -229,7 +229,7 @@ void CubeApi::setCornerButtonCallback(var callback) {
 }
 
 void CubeApi::setOrbDragCallback(var callback) {
-    const std::lock_guard<std::mutex> lock(mutex);
+    //const std::lock_guard<std::mutex> lock(mutex);
     if (!HiseJavascriptEngine::isJavascriptFunction(callback)) {
         return;
     }
