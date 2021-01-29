@@ -676,7 +676,7 @@ expHandler(mc->getExpansionHandler())
 
 	bankColumn->setNewRootDirectory(rootFile);
 
-	addAndMakeVisible(saveButton = new TextButton("Save Preset"));
+	addAndMakeVisible(saveButton = new TextButton("Overwrite Preset"));
 	saveButton->addListener(this);
 
     addAndMakeVisible(manageButton = new TextButton(HiseDeviceSimulator::isMobileDevice() ? "Sync" : "More"));
