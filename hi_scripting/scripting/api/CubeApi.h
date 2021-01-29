@@ -77,25 +77,20 @@ struct Cube {
 class CubeApi : public ApiClass, public ScriptingObject
 {
 public:
+    // Returns the Cube data associated with this MainController instance.
+    // Note: there may be multiple instances of running multiple Cubes at once
+    // in a DAW.
+    static Cube& getCubeData(const MainController* mc) {
+        if (cubes.find(mc) == cubes.end()) {
+            cubes[mc] = {};
+        }
+        return cubes[mc];
+    }
+
     CubeApi(ProcessorWithScriptingContent *p);
 
     ~CubeApi();
 
-    ////  Static API used by the cube C++ library.  ////
-
-    // Returns a copy of the Cube data associated with this MainController.
-    // Note: there may be multiple instances of running multiple Cubes at once
-    // in a DAW.
-    static Cube getCubeData(const MainController* mc);
-
-    // Removes the cube data for the given MainController, as part of cleanup.
-    static void removeCubeData(const MainController* mc);
-
-    static void setOrbPosition(const MainController* mc,
-                               float x, float y, float z);
-
-
-    ////  HiseScript API.  ////
 	struct Wrapper {
 		API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbPosition);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbTime);
@@ -118,6 +113,7 @@ public:
         API_VOID_METHOD_WRAPPER_1(CubeApi, setCornerButtonCallback);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbDragCallback);
 	};
+
     void setOrbPosition(float x, float y, float z);
     void setOrbTime(float t);
     Array<var> getOrbPosition();
@@ -144,14 +140,9 @@ public:
 
 private:
     static std::map<const MainController*, Cube> cubes;
-    static std::mutex mutex;
-
-    // Non thread-safe version of getCubeData(const MainController*).
-    static Cube& getCubeDataUnsafe(const MainController* mc);
 
     Orbit::Axis* getAxis(int axis);
 
-    // Returns the cube data for the current app instance.
     Cube& getCubeData();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CubeApi);
