@@ -497,8 +497,7 @@ PresetBrowserColumn::PresetBrowserColumn(MainController* mc_, PresetBrowser* p, 
 	addAndMakeVisible(editButton = new TextButton("Edit"));
 	editButton->addListener(this);
 
-	// if final column, change text to "Save New" for clarity
-	addAndMakeVisible(addButton = new TextButton(index == 2 ? "Save New" : "Add"));
+	addAndMakeVisible(addButton = new TextButton("Add"));
 	addButton->addListener(this);
 
 	addAndMakeVisible(renameButton = new TextButton("Rename"));
@@ -506,7 +505,6 @@ PresetBrowserColumn::PresetBrowserColumn(MainController* mc_, PresetBrowser* p, 
 
 	addAndMakeVisible(deleteButton = new TextButton("Delete"));
 	deleteButton->addListener(this);
-
 
 	listModel = new ColumnListModel(parent, index, listener);
 	listModel->database = dynamic_cast<PresetBrowser*>(listener)->getDataBase();
