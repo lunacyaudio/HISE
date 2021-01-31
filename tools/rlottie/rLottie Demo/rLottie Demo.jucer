@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="VCthIU" name="rLottie Demo" projectType="guiapp" jucerVersion="5.4.3">
+<JUCERPROJECT id="VCthIU" name="rLottie Demo" projectType="guiapp" jucerVersion="5.4.7">
   <MAINGROUP id="gCmGD9" name="rLottie Demo">
     <GROUP id="{A5C38953-0992-AB32-3B5C-017AA4E9E9E5}" name="Source">
       <FILE id="UTdDV7" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
