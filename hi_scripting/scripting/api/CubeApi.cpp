@@ -144,6 +144,20 @@ void CubeApi::setOrbitIntensity(float intensity) {
     cube.orbit.intensity = intensity;
 }
 
+void CubeApi::setGradientStart(int r, int g, int b) {
+    Cube& cube = getCubeData();
+    cube.orbit.gradientStart.x = static_cast<float>(r) / 255.f;
+    cube.orbit.gradientStart.y = static_cast<float>(g) / 255.f;
+    cube.orbit.gradientStart.z = static_cast<float>(b) / 255.f;
+}
+
+void CubeApi::setGradientEnd(int r, int g, int b) {
+    Cube& cube = getCubeData();
+    cube.orbit.gradientEnd.x = static_cast<float>(r) / 255.f;
+    cube.orbit.gradientEnd.y = static_cast<float>(g) / 255.f;
+    cube.orbit.gradientEnd.z = static_cast<float>(b) / 255.f;
+}
+
 void CubeApi::setRippleAmount(int id, float rippleAmount) {
     Cube& cube = getCubeData();
     if (id < cube.orb.rippleAmounts.size()) {

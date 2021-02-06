@@ -54,6 +54,10 @@ struct Orbit {
     hise::Vector3D<float> rotation;
     hise::Vector3D<bool> mirror;
     float intensity = 1;
+    hise::Vector3D<float> gradientStart =
+        hise::Vector3D<float>(164.f, 108.f, 217.f) / 255.f;
+    hise::Vector3D<float> gradientEnd =
+        hise::Vector3D<float>(224.f, 130.f, 114.f) / 255.f;
 };
 
 struct Cube {
@@ -106,6 +110,8 @@ public:
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitRotation);
         API_VOID_METHOD_WRAPPER_3(CubeApi, setOrbitMirror);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setOrbitIntensity);
+        API_VOID_METHOD_WRAPPER_3(CubeApi, setGradientStart);
+        API_VOID_METHOD_WRAPPER_3(CubeApi, setGradientEnd);
         API_VOID_METHOD_WRAPPER_2(CubeApi, setRippleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setWiggleAmount);
         API_VOID_METHOD_WRAPPER_1(CubeApi, setEther);
@@ -126,6 +132,8 @@ public:
     void setOrbitRotation(float x, float y, float z);
     void setOrbitMirror(bool x, bool y, bool z);
     void setOrbitIntensity(float intensity);
+    void setGradientStart(int r, int g, int b);
+    void setGradientEnd(int r, int g, int b);
     void enableDragging();
     void disableDragging();
     void setRippleAmount(int id, float rippleAmount);
