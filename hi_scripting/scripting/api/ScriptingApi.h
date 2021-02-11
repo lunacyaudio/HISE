@@ -339,6 +339,9 @@ public:
 		/** Returns the currently loaded user preset (without extension). */
 		String getCurrentUserPresetName();
 
+		/** Returns the currently loaded user preset file */
+		var getCurrentUserPresetFile();
+
 		/** Asks for a preset name (if presetName is empty) and saves the current user preset. */
 		void saveUserPreset(var presetName);
 

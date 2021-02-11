@@ -18,6 +18,8 @@ CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
     ADD_API_METHOD_3(setOrbitRotation);
     ADD_API_METHOD_3(setOrbitMirror);
     ADD_API_METHOD_1(setOrbitIntensity);
+    ADD_API_METHOD_3(setGradientStart);
+    ADD_API_METHOD_3(setGradientEnd);
     ADD_API_METHOD_2(setRippleAmount);
     ADD_API_METHOD_1(setWiggleAmount);
     ADD_API_METHOD_1(setEther);

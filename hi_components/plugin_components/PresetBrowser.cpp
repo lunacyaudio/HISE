@@ -543,8 +543,8 @@ void PresetBrowser::ModalWindow::resized()
 {
 	inputLabel->centreWithSize(300, 30);
 
-	okButton->setBounds(inputLabel->getX(), inputLabel->getBottom() + 20, 100, 30);
-	cancelButton->setBounds(inputLabel->getRight() - 100, inputLabel->getBottom() + 20, 100, 30);
+	okButton->setBounds(inputLabel->getRight() - 100, inputLabel->getBottom() + 20, 100, 30);
+	cancelButton->setBounds(inputLabel->getX(), inputLabel->getBottom() + 20, 100, 30);
 }
 
 void PresetBrowser::ModalWindow::refreshModalWindow()
@@ -676,10 +676,10 @@ expHandler(mc->getExpansionHandler())
 
 	bankColumn->setNewRootDirectory(rootFile);
 
-	addAndMakeVisible(saveButton = new TextButton("Overwrite Preset"));
+	addAndMakeVisible(saveButton = new TextButton("Save Preset"));
 	saveButton->addListener(this);
 
-    addAndMakeVisible(manageButton = new TextButton(HiseDeviceSimulator::isMobileDevice() ? "Sync" : "More"));
+    addAndMakeVisible(manageButton = new TextButton(HiseDeviceSimulator::isMobileDevice() ? "Sync" : "Options"));
 	manageButton->addListener(this);
 
 	setSize(width, height);
@@ -863,7 +863,7 @@ void PresetBrowser::resized()
 		Rectangle<int> ar(3, y + 5, getWidth() - 6, 30);
 
 		saveButton->setBounds(ar.removeFromRight(100));
-		manageButton->setBounds(ar.removeFromLeft(100));
+		manageButton->setBounds(ar.removeFromLeft(30));
 		searchBar->setBounds(ar);
 
 		y += 40;
@@ -871,22 +871,22 @@ void PresetBrowser::resized()
 	}
 	else
 	{
-		Rectangle<int> ar(3, 3 + 3, getWidth() - 6, 30);
+		Rectangle<int> ar(3, 6, getWidth() - 6, 30);
 
 
-		saveButton->setBounds(ar.removeFromRight(100));
-		manageButton->setBounds(ar.removeFromLeft(100));
+		saveButton->setBounds(ar.removeFromRight(110));
+		manageButton->setBounds(ar.removeFromLeft(40));
 
 		favoriteButton->setVisible(showFavoritesButton);
 
 		if(showFavoritesButton)
-			favoriteButton->setBounds(ar.removeFromLeft(30));
+			favoriteButton->setBounds(ar.removeFromLeft(40));
 
-
-		ar.removeFromLeft(10);
+		ar.removeFromRight(85);
+		ar.removeFromLeft(115);
 
 		searchBar->setBounds(ar);
-		y += 40;
+		y += 45;
 	}
 
 	int x = 3;
@@ -897,18 +897,23 @@ void PresetBrowser::resized()
 
 	auto listArea = Rectangle<int>(x, y, getWidth() - 6, getHeight() - y - 3);
 
+	if (tagList->isActive())
+	{
+		auto tagArea = listArea.removeFromBottom(40);
+		tagList->setBounds(tagArea.reduced(0, 5));
+	}
+
 	if (noteLabel->isVisible())
 	{
-		auto labelArea = listArea.removeFromTop(40);
+		auto labelArea = listArea.removeFromBottom(40);
 		noteLabel->setBounds(labelArea.reduced(3, 5));
 	}
 
-	if (tagList->isActive())
-		tagList->setBounds(listArea.removeFromTop(30));
-
 	if (showOnlyPresets)
 	{
-		presetColumn->setBounds(listArea);
+		auto w = (double)getWidth();
+		auto aw = roundToInt(w * 0.75);
+		presetColumn->setBounds(listArea.removeFromLeft(aw).reduced(2, 2));
 	}
 	else
 	{
@@ -922,13 +927,13 @@ void PresetBrowser::resized()
 			for (int i = 0; i < numColumnsToShow; i++)
 			{
 				auto r = jlimit(0.0, 1.0, (double)columnWidthRatios[i]);
-				columnWidths[i] = roundToInt(w * r);
+				columnWidths[i] = roundToInt(w * r * 0.75);
 			}
 		}
 		else
 		{
 			// column amount mismatch, use equal spacing...
-			const int columnWidth = roundToInt(w / (double)numColumnsToShow);
+			const int columnWidth = roundToInt(w / (double)numColumnsToShow * 0.75);
 
 			for (int i = 0; i < numColumnsToShow; i++)
 				columnWidths[i] = columnWidth;
@@ -987,11 +992,17 @@ void PresetBrowser::updateFavoriteButton()
 
 	showOnlyPresets = currentWildcard != "*" || on;
 
-static const unsigned char onShape[] = "nm\xac&=Ca\xee<Cl\x12\x96?C%\xaf""CCl\xde\xc2""FC\xd0\xe9""CClZ\x17""AC\xebPHCl(\x17""CC\xf1""5OCl\xad&=C\xc4-KCl267C\xf1""5OCl\0""69C\xebPHCl}\x8a""3C\xd0\xe9""CClH\xb7:C%\xaf""CCce";
+	static const unsigned char onShape[] = { 110,109,0,0,132,65,0,0,64,64,98,20,174,89,65,0,0,64,64,0,0,64,65,72,225,162,64,0,0,64,65,72,225,162,64,98,0,0,64,65,72,225,162,64,236,81,38,65,0,0,64,64,0,0,240,64,0,0,64,64,98,180,200,142,64,0,0,64,64,0,0,0,64,180,200,174,64,0,0,0,64,0,0,8,65,98,0,0,
+0,64,106,188,74,65,27,47,221,64,58,180,133,65,250,126,4,65,133,235,143,65,98,94,186,29,65,20,174,155,65,0,0,64,65,205,204,170,65,0,0,64,65,205,204,170,65,98,0,0,64,65,205,204,170,65,162,69,98,65,21,174,155,65,6,129,123,65,133,235,143,65,98,57,180,136,
+65,57,180,133,65,0,0,176,65,106,188,74,65,0,0,176,65,0,0,8,65,98,0,0,176,65,180,200,174,64,211,77,156,65,0,0,64,64,0,0,132,65,0,0,64,64,99,101,0,0 };
 
-	static const unsigned char offShape[] = { 110,109,0,144,89,67,0,103,65,67,108,0,159,88,67,0,3,68,67,108,129,106,86,67,0,32,74,67,108,1,38,77,67,0,108,74,67,108,1,121,84,67,0,28,80,67,108,129,227,81,67,255,3,89,67,108,1,144,89,67,127,206,83,67,108,1,60,97,67,255,3,89,67,108,129,166,94,67,0,28,
-		80,67,108,129,249,101,67,0,108,74,67,108,1,181,92,67,0,32,74,67,108,1,144,89,67,0,103,65,67,99,109,0,144,89,67,1,76,71,67,108,128,73,91,67,1,21,76,67,108,0,94,96,67,129,62,76,67,108,0,90,92,67,129,92,79,67,108,128,196,93,67,129,62,84,67,108,0,144,89,
-		67,129,99,81,67,108,0,91,85,67,1,63,84,67,108,128,197,86,67,129,92,79,67,108,128,193,82,67,129,62,76,67,108,0,214,87,67,1,21,76,67,108,0,144,89,67,1,76,71,67,99,101,0,0 };
+	static const unsigned char offShape[] = { 110,109,0,0,132,65,0,0,64,64,98,20,174,89,65,0,0,64,64,0,0,64,65,72,225,162,64,0,0,64,65,72,225,162,64,98,0,0,64,65,72,225,162,64,236,81,38,65,0,0,64,64,0,0,240,64,0,0,64,64,98,180,200,142,64,0,0,64,64,0,0,0,64,180,200,174,64,0,0,0,64,0,0,8,65,98,0,0,
+0,64,106,188,74,65,27,47,221,64,58,180,133,65,250,126,4,65,133,235,143,65,98,94,186,29,65,20,174,155,65,0,0,64,65,205,204,170,65,0,0,64,65,205,204,170,65,98,0,0,64,65,205,204,170,65,162,69,98,65,21,174,155,65,6,129,123,65,133,235,143,65,98,57,180,136,
+65,57,180,133,65,0,0,176,65,106,188,74,65,0,0,176,65,0,0,8,65,98,0,0,176,65,180,200,174,64,211,77,156,65,0,0,64,64,0,0,132,65,0,0,64,64,99,109,219,249,108,65,72,225,128,65,98,221,36,106,65,246,40,130,65,20,174,103,65,162,69,131,65,20,174,101,65,64,53,
+132,65,98,251,169,89,65,218,206,137,65,188,116,75,65,101,59,144,65,0,0,64,65,54,94,149,65,98,68,139,52,65,101,59,144,65,236,81,38,65,206,204,137,65,236,81,26,65,64,53,132,65,98,211,77,24,65,162,69,131,65,11,215,21,65,234,38,130,65,37,6,19,65,72,225,128,
+65,98,166,155,248,64,100,59,109,65,0,0,128,64,57,180,54,65,0,0,128,64,0,0,8,65,98,0,0,128,64,113,61,210,64,113,61,178,64,0,0,160,64,0,0,240,64,0,0,160,64,98,100,59,21,65,0,0,160,64,14,45,38,65,205,204,200,64,190,159,38,65,35,219,201,64,108,0,0,64,65,
+0,0,0,65,108,66,96,89,65,35,219,201,64,98,55,137,89,65,164,112,201,64,156,196,106,65,0,0,160,64,0,0,132,65,0,0,160,64,98,164,112,147,65,0,0,160,64,0,0,160,65,113,61,210,64,0,0,160,65,0,0,8,65,98,0,0,160,65,57,180,54,65,23,217,129,65,100,59,109,65,219,
+249,108,65,72,225,128,65,99,101,0,0 };
 
 	Path path;
 
@@ -1096,7 +1107,7 @@ void PresetBrowser::setShowEditButtons(bool showEditButtons)
 	bankColumn->setShowButtons(showEditButtons);
 	categoryColumn->setShowButtons(showEditButtons);
 	presetColumn->setShowButtons(showEditButtons);
-	tagList->setShowEditButton(showEditButtons);
+	tagList->setShowEditButton(true);
 }
 
 void PresetBrowser::setShowCloseButton(bool shouldShowButton)
