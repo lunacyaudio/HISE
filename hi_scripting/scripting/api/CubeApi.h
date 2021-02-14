@@ -26,8 +26,16 @@ struct Orbit {
             float time = 0;
             float pos = 0;
             float curve = 0.5f;
+            bool operator==(const Keyframe& rhs) const {
+                return time == rhs.time &&
+                    pos == rhs.pos &&
+                    curve == rhs.curve;
+            }
         };
         std::vector<Keyframe> keyframes;
+        bool operator==(const Path& rhs) const {
+            return keyframes == rhs.keyframes;
+        }
     };
 
     struct Lfo {
@@ -37,6 +45,13 @@ struct Orbit {
         float phaseOffset = 0;
         float min = -1;
         float max = 1;
+        bool operator==(const Lfo& rhs) const {
+            return waveType == rhs.waveType &&
+                frequency == rhs.frequency &&
+                phaseOffset == rhs.phaseOffset &&
+                min == rhs.min &&
+                max == rhs.max;
+        }
     };
 
     struct Axis {
@@ -44,6 +59,12 @@ struct Orbit {
         Type type = Path;
         struct Path path;
         struct Lfo lfo;
+        bool operator==(const Axis& rhs) const {
+            return type == rhs.type &&
+                (type == Path) ?
+                    path == rhs.path :
+                    lfo == rhs.lfo;
+        }
     };
 
     bool visible = false;
