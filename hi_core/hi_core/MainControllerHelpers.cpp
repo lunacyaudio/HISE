@@ -723,7 +723,7 @@ void MidiControllerAutomationHandler::handleParameterData(MidiBuffer &b)
 			}
 		}
 
-		if (!consumed) tempBuffer.addEvent(m, samplePos);
+		tempBuffer.addEvent(m, samplePos);
 	}
 
 	b.clear();
