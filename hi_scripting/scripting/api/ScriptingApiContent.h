@@ -1264,7 +1264,14 @@ public:
 			Point<float> hitPoint = { 0.0f, 0.0f };
 		} mouseCursorPath;
 
+		struct AnimationListener
+		{
+			virtual ~AnimationListener() {};
 
+			virtual void animationChanged() = 0;
+
+			JUCE_DECLARE_WEAK_REFERENCEABLE(AnimationListener);
+		};
 
 		enum Properties
 		{
@@ -1305,32 +1312,6 @@ public:
 		bool isAutomatable() const override { return true; }
 
 		void preloadStateChanged(bool isPreloading) override;
-
-#if 0
-		void preloadStateInternal(bool isPreloading, Result& r)
-		{
-			jassert_locked_script_thread(getScriptProcessor()->getMainController_());
-
-			var thisObject(this);
-			var b(isPreloading);
-			var::NativeFunctionArgs args(thisObject, &b, 1);
-
-			auto engine = dynamic_cast<JavascriptProcessor*>(getScriptProcessor())->getScriptEngine();
-
-			jassert(engine != nullptr);
-
-			if (engine != nullptr)
-			{
-				engine->maximumExecutionTime = RelativeTime(0.5);
-				engine->callExternalFunction(loadRoutine, args, &r);
-
-				if (r.failed())
-				{
-					debugError(dynamic_cast<Processor*>(getScriptProcessor()), r.getErrorMessage());
-				}
-			}
-		}
-#endif
 
 		void preRecompileCallback() override
 		{
@@ -1556,12 +1537,17 @@ public:
 			return nullptr;
 		}
 
+		void addAnimationListener(AnimationListener* l);
+
+		void removeAnimationListener(AnimationListener* l);
+
 	private:
 
 #if HISE_INCLUDE_RLOTTIE
 		void updateAnimationData();
 		ScopedPointer<RLottieAnimation> animation;
 		var animationData;
+		Array<WeakReference<AnimationListener>> animationListeners;
 #endif
 
 		bool shownAsPopup = false;
@@ -1601,6 +1587,8 @@ public:
 		
 		WeakReference<ScriptPanel> parentPanel;
 		ReferenceCountedArray<ScriptPanel> childPanels;
+
+		
 
 		bool isChildPanel = false;
 
