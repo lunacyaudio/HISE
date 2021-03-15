@@ -1,6 +1,7 @@
 namespace cube {
 
-std::map<const MainController*, Cube> CubeApi::cubes = {};
+// Removed and replaced with a better lifetime management
+//std::map<const MainController*, Cube> CubeApi::cubes = {};
 
 CubeApi::CubeApi(ProcessorWithScriptingContent *p) :
         ScriptingObject(p), ApiClass(0) {
@@ -194,15 +195,10 @@ void CubeApi::setCornerButtonCallback(var callback) {
     }
 
     Cube& cube = getCubeData();
-    cube.cornerButtonCallback =
-        [this, engine, callback](String id, String button) {
-            var thisObject(this);
-            var data[2] = { var(id), var(button) };
-            var::NativeFunctionArgs args(thisObject, data, 2);
-            Result result = Result::ok();
-            engine->maximumExecutionTime = RelativeTime(0.5);
-            engine->callExternalFunction(callback, args, &result);
-        };
+	cube.cornerButtonCallback = new WeakCallbackHolder(getScriptProcessor(), callback, 2);
+	cube.cornerButtonCallback->setThisObject(this);
+	cube.cornerButtonCallback->incRefCount();
+	cube.cornerButtonCallback->setHighPriority();
 }
 
 void CubeApi::setOrbDragCallback(var callback) {
@@ -217,15 +213,16 @@ void CubeApi::setOrbDragCallback(var callback) {
     }
 
     Cube& cube = getCubeData();
-    cube.orbDragCallback =
-        [this, engine, callback](float x, float y, float z) {
-            var thisObject(this);
-            var data[3] = { var(x), var(y), var(z) };
-            var::NativeFunctionArgs args(thisObject, data, 3);
-            Result result = Result::ok();
-            engine->maximumExecutionTime = RelativeTime(0.5);
-            engine->callExternalFunction(callback, args, &result);
-        };
+	cube.orbDragCallback = new WeakCallbackHolder(getScriptProcessor(), callback, 3);
+
+	// make it use this API class as this object
+	cube.orbDragCallback->setThisObject(this);
+
+	// increment the ref-counting so that anonymous functions are not deleted
+	cube.orbDragCallback->incRefCount();
+
+	// make it execute on the high-priority lane (the low-priority lane might be clogged by paint routines)
+	cube.orbDragCallback->setHighPriority();
 }
 
 Orbit::Axis* CubeApi::getAxis(int axis) {
@@ -244,6 +241,47 @@ Orbit::Axis* CubeApi::getAxis(int axis) {
 
 Cube& CubeApi::getCubeData() {
     return getCubeData(getScriptProcessor()->getMainController_());
+}
+
+cube::Cube& CubeApi::getCubeData(const MainController* mc)
+{
+	// this is bad style, so you might want to remove the constness from the 
+	// main controller argument along the call stack
+	auto unConst = const_cast<MainController*>(mc);
+
+	// Instead of the std::map we'll abuse the global object of each main controller
+	// (this is used when you define a `global` variable in the script engine, but
+	// it should do the trick and avoid a static storage type that comes with a few
+	// lifetime issues
+	static const Identifier cubeId("_mainCubeObject");
+
+	if (auto gObj = unConst->getGlobalVariableObject())
+	{
+		auto obj = gObj->getProperty(cubeId);
+		
+		if (auto cObj = dynamic_cast<cube::Cube*>(obj.getObject()))
+		{
+			// It already exists
+			return *cObj;
+		}
+		else
+		{
+			// It doesn't exist yet so we have to lazy-initialise it now
+			// (the first time it's being requested)
+			Cube::Ptr newObject = new Cube();
+
+			// a var takes ownership of an object if it's derived by ReferenceCountedObject
+			gObj->setProperty(cubeId, var(newObject));
+
+			return *newObject;
+		}
+	}
+	else
+	{
+		// the dynamic object is being created in the MainControllers' constructor
+		// so it should be available as long as the MainController is alive...
+		jassertfalse;
+	}
 }
 
 }  // namespace cube

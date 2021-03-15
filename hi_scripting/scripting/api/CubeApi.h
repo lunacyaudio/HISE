@@ -79,23 +79,47 @@ struct Orbit {
         hise::Vector3D<float>(164.f, 108.f, 217.f) / 255.f;
     hise::Vector3D<float> gradientEnd =
         hise::Vector3D<float>(224.f, 130.f, 114.f) / 255.f;
-};
+}; 
 
-struct Cube {
+struct Cube : public juce::ReferenceCountedObject
+{
+	// lets you use `Cube::Ptr`
+	using Ptr = ReferenceCountedObjectPtr<Cube>;
+
     Orb orb = {};
     Orbit orbit = {};
     float ether = 0;
-    std::map<String, var> cornerData = {};
+    std::map<String, var> cornerData = {}; // small tip: use Identifier instead of String
 
-    // JS callback invoked when a corner overlay button has been clicked.
-    //  - id: corner ID
-    //  - button: string identifying the button that was clicked
-    std::function<void(String, String)> cornerButtonCallback =
-        [](String id, String button) {};
+	Cube() = default;
+	~Cube() = default;
 
-    // JS callback invoked when the orb has been dragged.
-    std::function<void(float, float, float)> orbDragCallback =
-        [](float x, float y, float z) {};
+	// JS callback invoked when the orb has been dragged.
+	void onOrbDrag(float x, float y, float z)
+	{
+		if (orbDragCallback != nullptr)
+		{
+			std::array<var, 3> args = { var(x), var(y), var(z) };
+			orbDragCallback->call(args);
+		}
+	}
+
+	// JS callback invoked when a corner overlay button has been clicked.
+	//  - id: corner ID
+	//  - button: string identifying the button that was clicked
+	void onCornerButton(String id, String button)
+	{
+		if (cornerButtonCallback != nullptr)
+		{
+			std::array<var, 2> args = { var(id), var(button) };
+			cornerButtonCallback->call(args);
+		}
+	}
+
+	// This object is made exactly for the purpose of storing external callbacks
+	// and making sure the lifetime is managed properly
+	ScopedPointer<hise::WeakCallbackHolder> cornerButtonCallback;
+	ScopedPointer<hise::WeakCallbackHolder> orbDragCallback;
 };
 
 // The Cube Javascript API.
@@ -105,12 +129,7 @@ public:
     // Returns the Cube data associated with this MainController instance.
     // Note: there may be multiple instances of running multiple Cubes at once
     // in a DAW.
-    static Cube& getCubeData(const MainController* mc) {
-        if (cubes.find(mc) == cubes.end()) {
-            cubes[mc] = {};
-        }
-        return cubes[mc];
-    }
+    static Cube& getCubeData(const MainController* mc);
 
     CubeApi(ProcessorWithScriptingContent *p);
 
@@ -168,7 +187,6 @@ public:
     static Identifier getClassName() { RETURN_STATIC_IDENTIFIER("CubeApi"); }
 
 private:
-    static std::map<const MainController*, Cube> cubes;
 
     Orbit::Axis* getAxis(int axis);
 
