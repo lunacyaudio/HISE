@@ -513,6 +513,10 @@ WeakCallbackHolder::~WeakCallbackHolder()
 
 hise::WeakCallbackHolder& WeakCallbackHolder::operator=(WeakCallbackHolder&& other)
 {
+	// if this fires, you must create the object with a valid ScriptProcessor pointer
+	// (if the processor is not available, consider using a heap-allocated WeakCallbackHolder instead)
+	jassert(getScriptProcessor() != nullptr);
+
 	r = other.r;
 	weakCallback = other.weakCallback;
 	numExpectedArgs = other.numExpectedArgs;
@@ -544,7 +548,19 @@ void WeakCallbackHolder::call(var* arguments, int numArgs)
 			checkArguments("external call", numArgs, numExpectedArgs);
 			auto copy = *this;
 			copy.args.addArray(arguments, numArgs);
-			var::NativeFunctionArgs args_(var(), arguments, numArgs);
+
+			var thisObjVar;
+
+			if (auto ro = dynamic_cast<ReferenceCountedObject*>(thisObject.get()))
+			{
+				// If this fires, the object is not being ref-counted somewhere else
+				// and will be deleted when the thisObjVar goes out of scope
+				jassert(ro->getReferenceCount() > 1);
+
+				thisObjVar = var(ro);
+			}
+
+			var::NativeFunctionArgs args_(thisObjVar, arguments, numArgs);
 			checkValidArguments(args_);
 			auto t = highPriority ? JavascriptThreadPool::Task::HiPriorityCallbackExecution : JavascriptThreadPool::Task::LowPriorityCallbackExecution;
 			getScriptProcessor()->getMainController_()->getJavascriptThreadPool().addJob(t, dynamic_cast<JavascriptProcessor*>(getScriptProcessor()), copy);
