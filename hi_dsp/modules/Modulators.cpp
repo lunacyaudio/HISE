@@ -233,14 +233,13 @@ TimeModulation::TimeModulation(Mode m) :
 
 void TimeModulation::prepareToModulate(double sampleRate, int /*samplesPerBlock*/)
 {
-	constexpr double ratio = 1.0 / (double)HISE_CONTROL_RATE_DOWNSAMPLING_FACTOR;
-
-	controlRate = sampleRate * ratio;
-
-	smoothedIntensity.setValueAndRampTime(getIntensity(), controlRate, 0.05);
-
-	jassert(isInitialized());
-	
+	if (sampleRate > 0.0)
+	{
+		constexpr double ratio = 1.0 / (double)HISE_CONTROL_RATE_DOWNSAMPLING_FACTOR;
+		controlRate = sampleRate * ratio;
+		smoothedIntensity.setValueAndRampTime(getIntensity(), controlRate, 0.05);
+		jassert(isInitialized());
+	}
 }
 
 bool TimeModulation::isInitialized() { return getProcessor()->getSampleRate() != -1.0f; };
