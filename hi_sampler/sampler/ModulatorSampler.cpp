@@ -507,7 +507,7 @@ void ModulatorSampler::prepareToPlay(double newSampleRate, int samplesPerBlock)
 
 	if (newSampleRate != -1.0)
 	{
-		StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, samplesPerBlock);
+		StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, samplesPerBlock, (double)MAX_SAMPLER_PITCH);
 	}
 }
 
@@ -662,7 +662,7 @@ void ModulatorSampler::refreshMemoryUsage()
 	{
 		temporaryVoiceBuffer = hlac::HiseSampleBuffer(temporaryBufferShouldBeFloatingPoint, 2, 0);
 
-		StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, getLargestBlockSize());
+		StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, getLargestBlockSize(), (double)MAX_SAMPLER_PITCH);
 
 		for (auto i = 0; i < getNumVoices(); i++)
 		{
@@ -675,6 +675,8 @@ void ModulatorSampler::refreshMemoryUsage()
 	{
 		SoundIterator sIter(this, false);
 
+        double maxPitch = (double)MAX_SAMPLER_PITCH;
+        
 		while (const auto sound = sIter.getNextSound())
 		{
 			for (int j = 0; j < numChannels; j++)
@@ -682,9 +684,15 @@ void ModulatorSampler::refreshMemoryUsage()
 				if (auto micS = sound->getReferenceToSound(j))
 				{
 					actualPreloadSize += micS->getActualPreloadSize();
+                    maxPitch = jmax(sound->getMaxPitchRatio(), maxPitch);
 				}
 			}
 		}
+        
+        if(maxPitch > (double)MAX_SAMPLER_PITCH)
+        {
+            StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, getLargestBlockSize(), maxPitch * 1.2); // give it a little more to be safe...
+        }
 	}
 
 	for (int i = 0; i < getNumVoices(); i++)

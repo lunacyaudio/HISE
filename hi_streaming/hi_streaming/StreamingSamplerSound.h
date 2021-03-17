@@ -447,6 +447,7 @@ private:
 	void loopChanged();
 	void lengthChanged();
 
+    void rebuildCrossfadeBuffer(bool preloadContainsLoop);
 	void applyCrossfadeToPreloadBuffer();
 
 	/** This fills the supplied AudioSampleBuffer with samples.

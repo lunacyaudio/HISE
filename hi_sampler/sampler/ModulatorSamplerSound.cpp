@@ -280,16 +280,21 @@ Range<int> ModulatorSamplerSound::getVelocityRange() const {
 float ModulatorSamplerSound::getPropertyVolume() const noexcept { return gain.load(); }
 double ModulatorSamplerSound::getPropertyPitch() const noexcept { return pitchFactor.load(); }
 
+double ModulatorSamplerSound::getMaxPitchRatio() const
+{
+    if (auto s = getReferenceToSound())
+    {
+        int hiKey = (int)getSampleProperty(SampleIds::HiKey);
+        int root = (int)getSampleProperty(SampleIds::Root);
+        return s->getPitchFactor(hiKey, root);
+    }
+    
+    return 1.0;
+}
+    
 bool ModulatorSamplerSound::noteRangeExceedsMaxPitch() const
 {
-	if (auto s = getReferenceToSound())
-	{
-		auto pf = s->getPitchFactor(midiNotes.getHighestBit(), rootNote);
-
-		return pf > (double)MAX_SAMPLER_PITCH;
-	}
-
-	return false;
+    return getMaxPitchRatio() > (double)MAX_SAMPLER_PITCH;
 }
 
 void ModulatorSamplerSound::loadEntireSampleIfMaxPitch()

@@ -211,7 +211,7 @@ void StreamingSamplerSound::setPreloadSize(int newPreloadSize, bool forceReload)
 
 	if (loopEnabled && (loopEnd - loopStart > 0) && (loopEnd - sampleStart) < internalPreloadSize)
 	{
-		entireSampleLoaded = false;
+		//entireSampleLoaded = false;
 		
 		int pos = loopEnd - sampleStart;
 
@@ -391,6 +391,10 @@ bool StreamingSamplerSound::hasActiveState() const noexcept { return !isMissing(
 
 double StreamingSamplerSound::getPitchFactor(int noteNumberToPitch, int rootNoteForPitchFactor) noexcept
 {
+    // If this fires, you are using uninitialised MIDI values
+    jassert(noteNumberToPitch >= 0);
+    jassert(rootNoteForPitchFactor >= 0);
+    
 	return pow(2.0, (noteNumberToPitch - rootNoteForPitchFactor) / 12.0);
 }
 
@@ -493,7 +497,13 @@ void StreamingSamplerSound::applyCrossfadeToPreloadBuffer()
 	{
 		auto fadePos = loopEnd - sampleStart - crossfadeLength;
 		auto numInBuffer = preloadBuffer.getNumSamples();
-
+        
+        if(loopBuffer.getNumSamples() == 0)
+        {
+            bool preloadContainsLoop = loopEnd <= preloadBuffer.getNumSamples() - sampleStart;
+            rebuildCrossfadeBuffer(preloadContainsLoop);
+        }
+        
 		if (fadePos < numInBuffer)
 		{
 			preloadBuffer.burnNormalisation();
@@ -525,7 +535,7 @@ void StreamingSamplerSound::loopChanged()
 
 	if (loopEnabled)
 	{
-		bool preloadContainsLoop = loopEnd < preloadBuffer.getNumSamples() - sampleStart;
+		bool preloadContainsLoop = loopEnd <= preloadBuffer.getNumSamples() - sampleStart;
 
 		if (preloadContainsLoop)
 		{
@@ -547,52 +557,11 @@ void StreamingSamplerSound::loopChanged()
 			smallLoopBuffer.setSize(2, 0);
 		}
 
-		if (crossfadeLength != 0)
-		{
-			// If we're copying the crossfade to the preload buffer we will need to take the sample start into account
-			// (otherwise it will be compensated during playback)
-			auto offsetInPreloadBuffer = preloadContainsLoop ? sampleStart : 0;
-
-			const int startCrossfade = offsetInPreloadBuffer + loopStart - crossfadeLength;
-
-			if (startCrossfade < 0)
-				return;
-
-			auto isHlac = fileReader.isMonolithic();
-
-			loopBuffer = hlac::HiseSampleBuffer(!isHlac, 2, (int)crossfadeLength);
-			loopBuffer.clear();
-
-			hlac::HiseSampleBuffer tempBuffer(!isHlac, 2, (int)crossfadeLength);
-
-			// Calculate the fade in
-			
-			tempBuffer.clear();
-
-			ScopedFileHandler sfh(this);
-
-			fileReader.readFromDisk(loopBuffer, 0, (int)crossfadeLength, startCrossfade + monolithOffset, false);
-
-			loopBuffer.burnNormalisation();
-
-			loopBuffer.applyGainRamp(0, 0, (int)crossfadeLength, 0.0f, 1.0f);
-			loopBuffer.applyGainRamp(1, 0, (int)crossfadeLength, 0.0f, 1.0f);
-
-			// Calculate the fade out
-			tempBuffer.clear();
-
-			const int endCrossfade = offsetInPreloadBuffer + loopEnd - crossfadeLength;
-
-			fileReader.readFromDisk(tempBuffer, 0, (int)crossfadeLength, endCrossfade + monolithOffset, false);
-
-			tempBuffer.burnNormalisation();
-			tempBuffer.applyGainRamp(0, 0, (int)crossfadeLength, 1.0f, 0.0f);
-			tempBuffer.applyGainRamp(1, 0, (int)crossfadeLength, 1.0f, 0.0f);
-			
-			hlac::HiseSampleBuffer::add(loopBuffer, tempBuffer, 0, 0, crossfadeLength);
-
-			applyCrossfadeToPreloadBuffer();
-		}
+        if(crossfadeLength != 0)
+        {
+            rebuildCrossfadeBuffer(preloadContainsLoop);
+            applyCrossfadeToPreloadBuffer();
+        }
 	}
 	else
 	{
@@ -605,6 +574,51 @@ void StreamingSamplerSound::loopChanged()
 	}
 }
 
+void StreamingSamplerSound::rebuildCrossfadeBuffer(bool preloadContainsLoop)
+{
+    // If we're copying the crossfade to the preload buffer we will need to take the sample start into account
+    // (otherwise it will be compensated during playback)
+    auto offsetInPreloadBuffer = preloadContainsLoop ? sampleStart : 0;
+    
+    const int startCrossfade = offsetInPreloadBuffer + loopStart - crossfadeLength;
+    
+    if (startCrossfade < 0)
+        return;
+    
+    auto isHlac = fileReader.isMonolithic();
+    
+    loopBuffer = hlac::HiseSampleBuffer(!isHlac, 2, (int)crossfadeLength);
+    loopBuffer.clear();
+    
+    hlac::HiseSampleBuffer tempBuffer(!isHlac, 2, (int)crossfadeLength);
+    
+    // Calculate the fade in
+    
+    tempBuffer.clear();
+    
+    ScopedFileHandler sfh(this);
+    
+    fileReader.readFromDisk(loopBuffer, 0, (int)crossfadeLength, startCrossfade + monolithOffset, false);
+    
+    loopBuffer.burnNormalisation();
+    
+    loopBuffer.applyGainRamp(0, 0, (int)crossfadeLength, 0.0f, 1.0f);
+    loopBuffer.applyGainRamp(1, 0, (int)crossfadeLength, 0.0f, 1.0f);
+    
+    // Calculate the fade out
+    tempBuffer.clear();
+    
+    const int endCrossfade = offsetInPreloadBuffer + loopEnd - crossfadeLength;
+    
+    fileReader.readFromDisk(tempBuffer, 0, (int)crossfadeLength, endCrossfade + monolithOffset, false);
+    
+    tempBuffer.burnNormalisation();
+    tempBuffer.applyGainRamp(0, 0, (int)crossfadeLength, 1.0f, 0.0f);
+    tempBuffer.applyGainRamp(1, 0, (int)crossfadeLength, 1.0f, 0.0f);
+    
+    hlac::HiseSampleBuffer::add(loopBuffer, tempBuffer, 0, 0, crossfadeLength);
+}
+    
 void StreamingSamplerSound::wakeSound() const { fileReader.wakeSound(); }
 
 
