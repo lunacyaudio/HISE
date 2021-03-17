@@ -503,11 +503,13 @@ const Processor * ModulatorSampler::getChildProcessor(int processorIndex) const
 
 void ModulatorSampler::prepareToPlay(double newSampleRate, int samplesPerBlock)
 {
+    auto prevBlockSize = getLargestBlockSize();
+    
 	ModulatorSynth::prepareToPlay(newSampleRate, samplesPerBlock);
 
-	if (newSampleRate != -1.0)
+	if (samplesPerBlock > 0 && prevBlockSize != samplesPerBlock)
 	{
-		StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, samplesPerBlock, (double)MAX_SAMPLER_PITCH);
+        refreshMemoryUsage();
 	}
 }
 
@@ -649,6 +651,9 @@ void ModulatorSampler::refreshMemoryUsage()
 {
 	if (sampleMap == nullptr)
 		return;
+    
+    if(getLargestBlockSize() <= 0)
+        return;
 
 	const auto temporaryBufferIsFloatingPoint = getTemporaryVoiceBuffer()->isFloatingPoint();
     
@@ -693,11 +698,6 @@ void ModulatorSampler::refreshMemoryUsage()
         {
             StreamingSamplerVoice::initTemporaryVoiceBuffer(&temporaryVoiceBuffer, getLargestBlockSize(), maxPitch * 1.2); // give it a little more to be safe...
         }
-	}
-
-	for (int i = 0; i < getNumVoices(); i++)
-	{
-		//actualPreloadSize += static_cast<ModulatorSamplerVoice*>(getVoice(i))->getStreamingBufferSize();
 	}
 
 	const int64 streamBufferSizePerVoice = 2 *				// two buffers
