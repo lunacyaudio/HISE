@@ -105,11 +105,11 @@ ModulatorSamplerSound::ModulatorSamplerSound(SampleMap* parent, const ValueTree&
 		loadSampleFromValueTree(data, hmaf);	
 	}
 
-
 	firstSound = soundArray.getFirst();
 
-	
-
+    for(auto s: soundArray)
+        s->setDelayPreloadInitialisation(true);
+    
 	ScopedValueSetter<bool> svs(enableAsyncPropertyChange, false);
 
 	for (int i = 0; i < data.getNumProperties(); i++)
@@ -118,19 +118,9 @@ ModulatorSamplerSound::ModulatorSamplerSound(SampleMap* parent, const ValueTree&
 
 		updateInternalData(id_, data.getProperty(id_));
 	}
-
-#if 0
-	if (firstSound.get()->isMonolithic())
-	{
-		const int64 offset = firstSound->getMonolithOffset();
-		const int64 length = firstSound->getMonolithLength();
-		const double sampleRate = firstSound->getMonolithSampleRate();
-
-		data.setProperty("MonolithOffset", offset, nullptr);
-		data.setProperty("MonolithLength", length, nullptr);
-		data.setProperty("SampleRate", sampleRate, nullptr);
-	}
-#endif
+    
+    for(auto s: soundArray)
+        s->setDelayPreloadInitialisation(false);
 }
 
 ModulatorSamplerSound::~ModulatorSamplerSound()

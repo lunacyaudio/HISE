@@ -119,8 +119,28 @@ void StreamingSamplerSound::setBasicMappingData(const StreamingHelpers::BasicMap
 	velocityRange.setRange(data.lowVelocity, (data.highVelocity - data.lowVelocity) + 1, 1);
 }
 
+void StreamingSamplerSound::setDelayPreloadInitialisation(bool shouldDelay)
+{
+    if(delayPreloadInitialisation != shouldDelay)
+    {
+        delayPreloadInitialisation = shouldDelay;
+        
+        if(!shouldDelay)
+        {
+            loopChanged();
+            setPreloadSize(preloadSize, true);
+        }
+    }
+}
+    
 void StreamingSamplerSound::setPreloadSize(int newPreloadSize, bool forceReload)
 {
+    if(delayPreloadInitialisation)
+    {
+        preloadSize = newPreloadSize;
+        return;
+    }
+    
 	if (reversed)
 		return;
 
@@ -521,6 +541,9 @@ void StreamingSamplerSound::applyCrossfadeToPreloadBuffer()
 
 void StreamingSamplerSound::loopChanged()
 {
+    if(delayPreloadInitialisation)
+        return;
+    
 	ScopedLock sl(getSampleLock());
 
 	if (sampleEnd == MAX_SAMPLE_NUMBER && loopEnabled)

@@ -284,6 +284,9 @@ public:
 
 	const CriticalSection& getSampleLock() const { return lock; };
 
+    /** Use this in order to skip the preloading before all properties have been set. */
+    void setDelayPreloadInitialisation(bool shouldDelay);
+    
 private:
 
 	// ==============================================================================================================================================
@@ -470,6 +473,8 @@ private:
 
 	bool purged;
 
+    bool delayPreloadInitialisation = false;
+    
 	friend class SampleLoader;
 
 	hlac::HiseSampleBuffer preloadBuffer;
