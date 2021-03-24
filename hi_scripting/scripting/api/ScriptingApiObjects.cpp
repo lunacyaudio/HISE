@@ -493,9 +493,11 @@ struct ScriptingObjects::ScriptDownloadObject::Wrapper
 {
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, resume);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, stop);
+	API_METHOD_WRAPPER_0(ScriptDownloadObject, abort);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, isRunning);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, getProgress);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, getFullURL);
+	API_METHOD_WRAPPER_0(ScriptDownloadObject, getStatusText);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, getDownloadedTarget);
 	API_METHOD_WRAPPER_0(ScriptDownloadObject, getDownloadSpeed);
 };
@@ -515,9 +517,11 @@ ScriptingObjects::ScriptDownloadObject::ScriptDownloadObject(ProcessorWithScript
 
 	ADD_API_METHOD_0(resume);
 	ADD_API_METHOD_0(stop);
+	ADD_API_METHOD_0(abort);
 	ADD_API_METHOD_0(isRunning);
 	ADD_API_METHOD_0(getProgress);
 	ADD_API_METHOD_0(getFullURL);
+	ADD_API_METHOD_0(getStatusText);
 	ADD_API_METHOD_0(getDownloadedTarget);
 	ADD_API_METHOD_0(getDownloadSpeed);
 }
@@ -525,6 +529,12 @@ ScriptingObjects::ScriptDownloadObject::ScriptDownloadObject(ProcessorWithScript
 ScriptingObjects::ScriptDownloadObject::~ScriptDownloadObject()
 {
 	flushTemporaryFile();
+}
+
+bool ScriptingObjects::ScriptDownloadObject::abort()
+{
+	shouldAbort.store(true);
+	return stop();
 }
 
 bool ScriptingObjects::ScriptDownloadObject::stop()
@@ -538,19 +548,25 @@ bool ScriptingObjects::ScriptDownloadObject::stop()
 	return false;
 }
 
-bool ScriptingObjects::ScriptDownloadObject::stopInternal()
+bool ScriptingObjects::ScriptDownloadObject::stopInternal(bool forceUpdate)
 {
-	if (isRunning_)
+	if (isRunning_ || forceUpdate)
 	{
+		download = nullptr;
 		flushTemporaryFile();
 
 		isRunning_ = false;
 		isFinished = false;
-		download = nullptr;
+
+		if (shouldAbort)
+		{
+			targetFile.deleteFile();
+		}
 
 		data->setProperty("success", false);
 		data->setProperty("finished", true);
 		call(true);
+
 		return true;
 	}
 
@@ -559,7 +575,7 @@ bool ScriptingObjects::ScriptDownloadObject::stopInternal()
 
 bool ScriptingObjects::ScriptDownloadObject::resume()
 {
-	if (!isRunning() && !isFinished)
+	if (!isRunning() && !isFinished && !shouldAbort)
 	{
 		isWaitingForStart = true;
 		return true;
@@ -568,44 +584,56 @@ bool ScriptingObjects::ScriptDownloadObject::resume()
 	return false;
 }
 
+
+
 bool ScriptingObjects::ScriptDownloadObject::resumeInternal()
 {
 	if (!isRunning_)
 	{
 		if (targetFile.existsAsFile())
 		{
-			if (targetFile.existsAsFile())
+			existingBytesBeforeResuming = targetFile.getSize();
+
+			int status = 0;
+
+			ScopedPointer<InputStream> wis = downloadURL.createInputStream(false, nullptr, nullptr, String(), 0, nullptr, &status);
+
+			auto numTotal = wis != nullptr ? wis->getTotalLength() : 0;
+
+			bool somethingToDownload = isPositiveAndBelow(existingBytesBeforeResuming, numTotal);
+
+			if (existingBytesBeforeResuming == numTotal && numTotal > 0)
 			{
-				existingBytesBeforeResuming = targetFile.getSize();
+				isFinished = true;
+				isRunning_ = false;
+				data->setProperty("success", true);
+				data->setProperty("finished", true);
+				call(true);
+				return true;
+			}
 
-				int status = 0;
+			if (numTotal > 0 && status == 200 && somethingToDownload)
+			{
+				wis = nullptr;
 
-				ScopedPointer<InputStream> wis = downloadURL.createInputStream(false, nullptr, nullptr, String(), 0, nullptr, &status);
+				resumeFile = targetFile.getNonexistentSibling(true);
 
-				auto numTotal = wis != nullptr ? wis->getTotalLength() : 0;
+				isRunning_ = true;
+				isWaitingForStop = false;
 
-				if (numTotal > 0 && status == 206 && numTotal < existingBytesBeforeResuming)
-				{
-					wis = nullptr;
+				String rangeHeader;
+				rangeHeader << "Range: bytes=" << existingBytesBeforeResuming << "-" << numTotal;
 
-					resumeFile = new TemporaryFile(targetFile, TemporaryFile::OptionFlags::putNumbersInBrackets);
+				download = downloadURL.downloadToFile(resumeFile, rangeHeader, this);
 
-					isRunning_ = true;
-
-					String rangeHeader;
-					rangeHeader << "Range: bytes=" << existingBytesBeforeResuming << "-" << numTotal;
-
-					download = downloadURL.downloadToFile(resumeFile->getFile(), rangeHeader, this);
-
-					data->setProperty("numTotal", numTotal);
-					data->setProperty("numDownloaded", existingBytesBeforeResuming);
-					data->setProperty("finished", false);
-					data->setProperty("success", false);
-				}
-				else
-				{
-					stopInternal();
-				}
+				data->setProperty("numTotal", numTotal);
+				data->setProperty("numDownloaded", existingBytesBeforeResuming);
+				data->setProperty("finished", false);
+				data->setProperty("success", false);
+			}
+			else
+			{
+				stopInternal();
 			}
 		}
 	}
@@ -633,6 +661,16 @@ double ScriptingObjects::ScriptDownloadObject::getProgress() const
 int ScriptingObjects::ScriptDownloadObject::getDownloadSpeed()
 {
 	return isRunning() ? jmax((int)bytesInLastSecond, (int)bytesInCurrentSecond) : 0;
+}
+
+double ScriptingObjects::ScriptDownloadObject::getDownloadSize()
+{
+	return (double)(totalLength_ + existingBytesBeforeResuming);
+}
+
+double ScriptingObjects::ScriptDownloadObject::getNumBytesDownloaded()
+{
+	return (double)(bytesDownloaded_ + existingBytesBeforeResuming);
 }
 
 void ScriptingObjects::ScriptDownloadObject::call(bool highPriority)
@@ -674,20 +712,28 @@ String ScriptingObjects::ScriptDownloadObject::getFullURL()
 
 var ScriptingObjects::ScriptDownloadObject::getDownloadedTarget()
 {
-	if (isFinished && data->getProperty("success"))
-	{
-		return var(new ScriptFile(getScriptProcessor(), targetFile));
-	}
+	return var(new ScriptFile(getScriptProcessor(), targetFile));
+}
 
-	return var();
+String ScriptingObjects::ScriptDownloadObject::getStatusText()
+{
+	if (isRunning_)
+		return "Downloading";
+
+	if (isFinished)
+		return "Completed";
+
+	if (isWaitingForStop)
+		return "Paused";
+
+	return "Waiting";
 }
 
 void ScriptingObjects::ScriptDownloadObject::finished(URL::DownloadTask*, bool success)
 {
 	data->setProperty("success", success);
 	data->setProperty("finished", true);
-	flushTemporaryFile();
-
+	
 	isRunning_ = false;
 	isFinished = true;
 
@@ -696,20 +742,29 @@ void ScriptingObjects::ScriptDownloadObject::finished(URL::DownloadTask*, bool s
 
 void ScriptingObjects::ScriptDownloadObject::flushTemporaryFile()
 {
-	if (resumeFile != nullptr)
+	if (resumeFile.existsAsFile())
 	{
-		FileInputStream fis(resumeFile->getFile());
+		ScopedPointer<FileInputStream> fis = new FileInputStream(resumeFile);
 		FileOutputStream fos(targetFile);
 
-		auto numWritten = fos.writeFromInputStream(fis, -1);
+		auto numWritten = fos.writeFromInputStream(*fis, -1);
 
         ignoreUnused(numWritten);
-		resumeFile = nullptr;
+		
+		fos.flush();
+		fis = nullptr;
+		
+		download = nullptr;
+		auto ok = resumeFile.deleteFile();
+		resumeFile = File();
 	}
 }
 
 void ScriptingObjects::ScriptDownloadObject::progress(URL::DownloadTask*, int64 bytesDownloaded, int64 totalLength)
 {
+	bytesDownloaded_ = bytesDownloaded;
+	totalLength_ = totalLength;
+
 	auto thisTimeMs = Time::getMillisecondCounter();
 
 	bytesInCurrentSecond += (bytesDownloaded + existingBytesBeforeResuming - lastBytesDownloaded);
@@ -725,9 +780,8 @@ void ScriptingObjects::ScriptDownloadObject::progress(URL::DownloadTask*, int64 
 	data->setProperty("numTotal", totalLength + existingBytesBeforeResuming);
 	data->setProperty("numDownloaded", bytesDownloaded + existingBytesBeforeResuming);
 
-	if (!callbackPending && (thisTimeMs - lastTimeMs) > 100)
+	if ((thisTimeMs - lastTimeMs) > 100)
 	{
-		callbackPending = true;
 		call(false);
 		lastTimeMs = thisTimeMs;
 	}

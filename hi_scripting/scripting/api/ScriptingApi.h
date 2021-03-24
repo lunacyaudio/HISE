@@ -423,6 +423,9 @@ public:
 		/** Sets the new zoom level (1.0 = 100%) */
 		void setZoomLevel(double newLevel);
 
+		/** Sets the Streaming Mode (0 -> Fast-SSD, 1 -> Slow-HDD) */
+		void setDiskMode(int mode);
+
 		/** Returns an object that contains all filter modes. */
 		var getFilterModeList() const;
 
@@ -960,9 +963,12 @@ public:
 	};
 
 	class Server : public ApiClass,
-				   public ScriptingObject
+				   public ScriptingObject,
+				   public GlobalServer::Listener
 	{
 	public:
+
+		using WeakPtr = WeakReference<Server>;
 
 		enum StatusCodes
 		{
@@ -978,7 +984,7 @@ public:
 
 		~Server()
 		{
-			internalThread.stopThread(3000);
+			globalServer.removeListener(this);
 		}
 		
 		Identifier getObjectName() const override { RETURN_STATIC_IDENTIFIER("Server"); }
@@ -1013,58 +1019,36 @@ public:
 		/** This function will be called whenever there is server activity. */
 		void setServerCallback(var callback);
 
+		void queueChanged(int numItems) override
+		{
+			if (serverCallback)
+			{
+				if(numItems < 2)
+					serverCallback.call1(numItems == 1);
+			}
+		}
+
+		void downloadQueueChanged(int) override
+		{
+
+		}
+
+		juce::URL getWithParameters(String subURL, var parameters)
+		{
+			return globalServer.getWithParameters(subURL, parameters);
+		}
+
 	private:
+
+		GlobalServer& globalServer;
 
 		WeakCallbackHolder serverCallback;
 
-		struct PendingCallback: public ReferenceCountedObject
-		{
-			using Ptr = ReferenceCountedObjectPtr<PendingCallback>;
-
-			PendingCallback(ProcessorWithScriptingContent* p, const var& function):
-				f(p, function, 2)
-			{
-				f.setHighPriority();
-				f.incRefCount();
-			}
-
-			WeakCallbackHolder f;
-
-			URL url;
-			String extraHeader;
-			bool isPost;
-			int status = 0;
-		};
-
-		struct WebThread : public Thread
-		{
-			WebThread(Server& p) :
-				Thread("Server Thread"),
-				parent(p)
-			{};
-
-			Server& parent;
-
-			void run() override;
-
-			CriticalSection queueLock;
-
-			std::atomic<bool> cleanDownloads = { false };
-
-			int numMaxDownloads = 1;
-			ReferenceCountedArray<PendingCallback> pendingCallbacks;
-			ReferenceCountedArray<ScriptingObjects::ScriptDownloadObject> pendingDownloads;
-
-		} internalThread;
-
 		JavascriptProcessor* jp;
 
-		URL getWithParameters(String subURL, var parameters);
-
-		URL baseURL;
-		String extraHeader;
-
 		struct Wrapper;
+
+		JUCE_DECLARE_WEAK_REFERENCEABLE(Server);
 	};
 
 	class FileSystem : public ApiClass,

@@ -543,7 +543,7 @@ void WeakCallbackHolder::call(var* arguments, int numArgs)
 {
 	try
 	{
-		if (weakCallback != nullptr)
+		if (weakCallback != nullptr && getScriptProcessor() != nullptr)
 		{
 			checkArguments("external call", numArgs, numExpectedArgs);
 			auto copy = *this;
