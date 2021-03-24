@@ -116,7 +116,7 @@ CustomSettingsWindow::CustomSettingsWindow(MainController* mc_, bool buildMenus)
 	ADD(SampleLocation);
 	ADD(DebugMode);
 	ADD(ScaleFactorList);
-	// ADD(UseOpenGL);
+	ADD(UseOpenGL);
     
 	setColour(ColourIds::textColour, Colours::white);
 
@@ -374,8 +374,8 @@ void CustomSettingsWindow::rebuildMenus(bool rebuildDeviceTypes, bool rebuildDev
 	
 	voiceAmountMultiplier->setSelectedId(driver->voiceAmountMultiplier, dontSendNotification);
 
-	// openGLSelector->addItemList({ "Yes", "No" }, 1);
-	// openGLSelector->setSelectedItemIndex(driver->useOpenGL ? 0 : 1, dontSendNotification);
+	openGLSelector->addItemList({ "Yes", "No" }, 1);
+	openGLSelector->setSelectedItemIndex(driver->useOpenGL ? 0 : 1, dontSendNotification);
 
 	bpmSelector->setSelectedId(driver->globalBPM > 0.0 ? (int)driver->globalBPM : 1, dontSendNotification);
 
@@ -481,11 +481,11 @@ void CustomSettingsWindow::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 
 		rebuildMenus(false, false);
 	}
-	// else if (comboBoxThatHasChanged == openGLSelector)
-	// {
-	// 	driver->useOpenGL = comboBoxThatHasChanged->getSelectedItemIndex() == 0;
-	// 	PresetHandler::showMessageWindow("Open GL Setting changed", "Close this window and reopen it in order to apply the changes");
-	// }
+	else if (comboBoxThatHasChanged == openGLSelector)
+	{
+		driver->useOpenGL = comboBoxThatHasChanged->getSelectedItemIndex() == 0;
+		PresetHandler::showMessageWindow("Open GL Setting changed", "Close this window and reopen it in order to apply the changes");
+	}
 	else if (comboBoxThatHasChanged == outputSelector)
 	{
 		const String outputName = outputSelector->getText();
@@ -554,7 +554,7 @@ void CustomSettingsWindow::paint(Graphics& g)
 	DRAW_LABEL(Properties::SampleRate, "Sample Rate");
 	DRAW_LABEL(Properties::GlobalBPM, "Global BPM");
 	DRAW_LABEL(Properties::ScaleFactor, "UI Zoom Factor");
-	// DRAW_LABEL(Properties::UseOpenGL, "Use OpenGL");
+	DRAW_LABEL(Properties::UseOpenGL, "Use OpenGL");
 	DRAW_LABEL(Properties::StreamingMode, "Streaming Mode");
 	DRAW_LABEL(Properties::VoiceAmountMultiplier, "Max Voices");
 
@@ -593,7 +593,7 @@ void CustomSettingsWindow::resized()
 	POSITION_COMBOBOX(Properties::SampleRate, sampleRateSelector);
 	POSITION_COMBOBOX(Properties::GlobalBPM, bpmSelector);
 	POSITION_COMBOBOX(Properties::ScaleFactor, scaleFactorSelector);
-	// POSITION_COMBOBOX(Properties::UseOpenGL, openGLSelector);
+	POSITION_COMBOBOX(Properties::UseOpenGL, openGLSelector);
 	POSITION_COMBOBOX(Properties::StreamingMode, diskModeSelector);
 	POSITION_COMBOBOX(Properties::VoiceAmountMultiplier, voiceAmountMultiplier);
 
