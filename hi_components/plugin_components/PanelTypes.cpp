@@ -113,6 +113,7 @@ void CustomSettingsWindowPanel::fromDynamicObject(const var& object)
 	SET(CustomSettingsWindow::Properties::ClearMidiCC);
 	SET(CustomSettingsWindow::Properties::SampleLocation);
 	SET(CustomSettingsWindow::Properties::DebugMode);
+	SET(CustomSettingsWindow::Properties::UseOpenGL);
 
 	window->refreshSizeFromProperties();
 
@@ -158,6 +159,7 @@ Identifier CustomSettingsWindowPanel::getDefaultablePropertyId(int index) const
 	SET(CustomSettingsWindow::Properties::SampleLocation);
 	SET(CustomSettingsWindow::Properties::DebugMode);
 	SET(CustomSettingsWindow::Properties::ScaleFactorList);
+	SET(CustomSettingsWindow::Properties::UseOpenGL);
 
 
 	jassertfalse;
@@ -184,6 +186,7 @@ var CustomSettingsWindowPanel::getDefaultProperty(int index) const
 	SET(CustomSettingsWindow::Properties::ClearMidiCC);
 	SET(CustomSettingsWindow::Properties::SampleLocation);
 	SET(CustomSettingsWindow::Properties::DebugMode);
+	SET(CustomSettingsWindow::Properties::UseOpenGL);
 
 	if (index == (int)CustomSettingsWindow::Properties::ScaleFactorList) return var({ var(0.5), var(0.75), var(1.0), var(1.25), var(1.5), var(2.0) });
 
