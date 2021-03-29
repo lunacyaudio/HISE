@@ -1053,7 +1053,7 @@ void PresetBrowser::setHighlightColourAndFont(Colour c, Colour bgColour, Font f)
 	lf.font = f;
 	lf.highlightColour = c;
 
-	favoriteButton->setColours(c.withAlpha(0.7f), c.withAlpha(0.5f), c.withAlpha(0.6f));
+	favoriteButton->setColours(c.withAlpha(0.5f), c.withAlpha(0.9f), c.withAlpha(0.6f));
 
 	setOpaque(bgColour.isOpaque());
 }
