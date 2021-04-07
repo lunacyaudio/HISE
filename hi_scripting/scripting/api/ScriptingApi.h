@@ -354,6 +354,12 @@ public:
 		/** Sets the tags that appear in the user preset browser. */
 		void setUserPresetTagList(var listOfTags);
 
+		/** Parses tags from presetXML */
+		var getTagsFromPreset(var file);
+
+		/** Writes tags in preset XML */
+		void setTagsForPreset(var file, var listOfTags);
+
 		/** Returns a list of all available user presets as relative path. */
 		var getUserPresetList() const;
 
@@ -445,7 +451,7 @@ public:
 		DynamicObject *getPlayHead();
 
 		/** Checks if the given CC number is used for parameter automation and returns the index of the control. */
-		int isControllerUsedByAutomation(int controllerNumber);
+		var isControllerUsedByAutomation(int controllerNumber);
 
 		/** Creates a MIDI List object. */
         ScriptingObjects::MidiList *createMidiList();
@@ -1086,6 +1092,9 @@ public:
 
 		/** Returns a list of all child files of a directory that match the wildcard. */
 		var findFiles(var directory, String wildcard, bool recursive);
+
+		/** Returns a list of all child directories of a directory that match the wildcard. */
+		var findDirectories(var directory, String wildcard, bool recursive);
 
 		/** Opens a file browser to choose a file. */
 		void browse(var startFolder, bool forSaving, String wildcard, var callback);

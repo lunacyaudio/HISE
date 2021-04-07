@@ -81,6 +81,21 @@ File MainController::UserPresetHandler::getCurrentlyLoadedFile() const
 	return currentlyLoadedFile;
 }
 
+juce::StringArray MainController::UserPresetHandler::getTagsFromPreset(const File& f)
+{
+	return PresetBrowser::DataBaseHelpers::getTagsFromXml(f);
+}
+
+void MainController::UserPresetHandler::setTagsForPreset(const File& f, const StringArray& tags)
+{
+	PresetBrowser::DataBaseHelpers::writeTagsInXml(f, tags);
+}
+
+bool MainController::UserPresetHandler::getPresetFavorite(const File& f)
+{
+	// return PresetBrowser::DataBaseHelpers::isFavorite(PresetBrowser::getDataBase(), f);
+}
+
 void MainController::UserPresetHandler::setCurrentlyLoadedFile(const File& f)
 {
 	currentlyLoadedFile = f;

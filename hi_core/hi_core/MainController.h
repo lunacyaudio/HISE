@@ -664,6 +664,21 @@ public:
 		/** Returns the currently loaded file. Can be used to display the user preset name. */
 		File getCurrentlyLoadedFile() const;;
 
+		/** Returns tags embedded in preset file. */
+		juce::StringArray getTagsFromPreset(const File& f);
+
+		/** Writes tags to preset file. */
+		void setTagsForPreset(const File& f, const StringArray& tags);
+
+		/** Returns whether or not preset file is favorite */
+		bool getPresetFavorite(const File& f);
+
+		/** Returns whether or not preset file is favorite */
+		void setPresetFavorite(const File& f, bool isFavorite);
+
+		/** Writes tags to preset file. */
+		void showPresetsMatchingTags(const StringArray& tags);
+
 		/** @internal */
 		void setCurrentlyLoadedFile(const File& f);
 

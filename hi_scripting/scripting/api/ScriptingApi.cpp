@@ -837,6 +837,8 @@ struct ScriptingApi::Engine::Wrapper
 	API_VOID_METHOD_WRAPPER_1(Engine, loadPreviousUserPreset);
 	API_VOID_METHOD_WRAPPER_1(Engine, loadUserPreset);
 	API_VOID_METHOD_WRAPPER_1(Engine, setUserPresetTagList);
+	API_METHOD_WRAPPER_1(Engine, getTagsFromPreset);
+	API_VOID_METHOD_WRAPPER_2(Engine, setTagsForPreset);
 	API_METHOD_WRAPPER_0(Engine, getUserPresetList);
 	API_METHOD_WRAPPER_0(Engine, getCurrentUserPresetName);
 	API_METHOD_WRAPPER_0(Engine, getCurrentUserPresetFile);
@@ -950,6 +952,8 @@ parentMidiProcessor(dynamic_cast<ScriptBaseMidiProcessor*>(p))
 	ADD_API_METHOD_0(getCurrentUserPresetFile);
 	ADD_API_METHOD_1(saveUserPreset);
 	ADD_API_METHOD_1(loadUserPreset);
+	ADD_API_METHOD_1(getTagsFromPreset);
+	ADD_API_METHOD_2(setTagsForPreset);
 	ADD_API_METHOD_0(getUserPresetList);
 	ADD_API_METHOD_0(isMpeEnabled);
 	ADD_API_METHOD_0(createMidiList);
@@ -1714,8 +1718,74 @@ void ScriptingApi::Engine::setUserPresetTagList(var listOfTags)
 
 		getProcessor()->getMainController()->getUserPresetHandler().getTagDataBase().setTagList(sa);
 	}
+}
 
+var ScriptingApi::Engine::getTagsFromPreset(var file)
+{
+	auto name = ScriptingObjects::ScriptFile::getFileNameFromFile(file);
+	File userPreset;
 
+	if (File::isAbsolutePath(name))
+	{
+		userPreset = File(name);
+	}
+	else
+	{
+		#if USE_BACKEND
+			File userPresetRoot = GET_PROJECT_HANDLER(getProcessor()).getSubDirectory(ProjectHandler::SubDirectories::UserPresets);
+		#else
+			File userPresetRoot = FrontendHandler::getUserPresetDirectory();
+		#endif
+
+		userPreset = userPresetRoot.getChildFile(file.toString() + ".preset");
+	}
+
+	if (userPreset.existsAsFile())
+	{
+		return getProcessor()->getMainController()->getUserPresetHandler().getTagsFromPreset(userPreset);
+	}
+	else
+	{
+		reportScriptError("User preset " + userPreset.getFullPathName() + " doesn't exist");
+	}
+}
+
+void ScriptingApi::Engine::setTagsForPreset(var file, var listOfTags)
+{
+	auto name = ScriptingObjects::ScriptFile::getFileNameFromFile(file);
+	File userPreset;
+
+	if (File::isAbsolutePath(name))
+	{
+		userPreset = File(name);
+	}
+	else
+	{
+		#if USE_BACKEND
+			File userPresetRoot = GET_PROJECT_HANDLER(getProcessor()).getSubDirectory(ProjectHandler::SubDirectories::UserPresets);
+		#else
+			File userPresetRoot = FrontendHandler::getUserPresetDirectory();
+		#endif
+
+		userPreset = userPresetRoot.getChildFile(file.toString() + ".preset");
+	}
+
+	if (userPreset.existsAsFile())
+	{
+		if (auto ar = listOfTags.getArray())
+		{
+			StringArray sa;
+
+			for (auto l : *ar)
+				sa.add(l.toString());
+
+			getProcessor()->getMainController()->getUserPresetHandler().setTagsForPreset(userPreset, sa);
+		}
+	}
+	else
+	{
+		reportScriptError("User preset " + userPreset.getFullPathName() + " doesn't exist");
+	}
 }
 
 var ScriptingApi::Engine::getUserPresetList() const
@@ -1877,17 +1947,18 @@ void ScriptingApi::Engine::rebuildCachedPools()
 
 DynamicObject * ScriptingApi::Engine::getPlayHead() { return getProcessor()->getMainController()->getHostInfoObject(); }
 
-int ScriptingApi::Engine::isControllerUsedByAutomation(int controllerNumber)
+var ScriptingApi::Engine::isControllerUsedByAutomation(int controllerNumber)
 {
 	auto handler = getProcessor()->getMainController()->getMacroManager().getMidiControlAutomationHandler();
+	Array<var> controls;
 
 	for (int i = 0; i < handler->getNumActiveConnections(); i++)
 	{
 		if (handler->getDataFromIndex(i).ccNumber == controllerNumber)
-			return i;
+			controls.add(handler->getDataFromIndex(i).attribute);
 	}
 
-	return -1;
+	return var(controls);
 }
 
 ScriptingObjects::MidiList *ScriptingApi::Engine::createMidiList() { return new ScriptingObjects::MidiList(getScriptProcessor()); };
@@ -4545,6 +4616,7 @@ struct ScriptingApi::FileSystem::Wrapper
 {
 	API_METHOD_WRAPPER_1(FileSystem, getFolder);
 	API_METHOD_WRAPPER_3(FileSystem, findFiles);
+	API_METHOD_WRAPPER_3(FileSystem, findDirectories);
 	API_METHOD_WRAPPER_0(FileSystem, getSystemId);
 	API_VOID_METHOD_WRAPPER_4(FileSystem, browse);
 	API_VOID_METHOD_WRAPPER_2(FileSystem, browseForDirectory);
@@ -4568,6 +4640,7 @@ ScriptingApi::FileSystem::FileSystem(ProcessorWithScriptingContent* pwsc):
 
 	ADD_API_METHOD_1(getFolder);
 	ADD_API_METHOD_3(findFiles);
+	ADD_API_METHOD_3(findDirectories);
 	ADD_API_METHOD_0(getSystemId);
 	ADD_API_METHOD_4(browse);
 	ADD_API_METHOD_2(browseForDirectory);
@@ -4599,6 +4672,24 @@ var ScriptingApi::FileSystem::findFiles(var directory, String wildcard, bool rec
 		if (root->isDirectory())
 		{
 			auto list = root->f.findChildFiles(File::findFilesAndDirectories, recursive, wildcard);
+
+			for (auto sf : list)
+				l.add(new ScriptingObjects::ScriptFile(p, sf));
+		}
+	}
+
+	return l;
+}
+
+var ScriptingApi::FileSystem::findDirectories(var directory, String wildcard, bool recursive)
+{
+	Array<var> l;
+
+	if (auto root = dynamic_cast<ScriptingObjects::ScriptFile*>(directory.getObject()))
+	{
+		if (root->isDirectory())
+		{
+			auto list = root->f.findChildFiles(File::findDirectories, recursive, wildcard);
 
 			for (auto sf : list)
 				l.add(new ScriptingObjects::ScriptFile(p, sf));
