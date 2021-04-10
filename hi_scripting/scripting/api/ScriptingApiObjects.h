@@ -213,6 +213,9 @@ public:
 		/** Checks if this file exists and is a directory. */
 		bool isDirectory() const;
 
+		/** Moves or renames file and returns true if operation succeeded */
+		bool moveFileTo(String targetLocation);
+
 		/** Deletes the file or directory WITHOUT confirmation. */
 		bool deleteFileOrDirectory();
 
