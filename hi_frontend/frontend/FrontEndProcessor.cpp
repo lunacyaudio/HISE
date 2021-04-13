@@ -629,9 +629,9 @@ FrontendStandaloneApplication::AudioWrapper::AudioWrapper()
 	auto userHeight = Desktop::getInstance().getDisplays().getMainDisplay().userArea.getHeight();
 
 	if (userHeight < 768)
-		setSize(870, 653);
+		setSize(900, 700);
 	else
-		setSize(1024, 768);
+		setSize(900, 700);
 #endif
     
 	startTimer(100);

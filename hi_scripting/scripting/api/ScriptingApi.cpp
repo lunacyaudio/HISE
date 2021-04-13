@@ -1954,8 +1954,10 @@ var ScriptingApi::Engine::isControllerUsedByAutomation(int controllerNumber)
 
 	for (int i = 0; i < handler->getNumActiveConnections(); i++)
 	{
-		if (handler->getDataFromIndex(i).ccNumber == controllerNumber)
-			controls.add(handler->getDataFromIndex(i).attribute);
+		if (handler->getDataFromIndex(i).ccNumber == controllerNumber) {
+			auto data = handler->getDataFromIndex(i);
+			controls.add(data.processor->getIdentifierForParameterIndex(data.attribute).toString());
+		}
 	}
 
 	return var(controls);
