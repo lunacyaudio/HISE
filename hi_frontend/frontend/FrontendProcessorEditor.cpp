@@ -261,14 +261,14 @@ void FrontendProcessorEditor::resized()
 
 void FrontendProcessorEditor::newOpenGLContextCreated()
 {
-    // Instead of the std::map we'll abuse the global object of each main controller
-    // (this is used when you define a `global` variable in the script engine, but
-    // it should do the trick and avoid a static storage type that comes with a few
-    // lifetime issues
-    static const Identifier cubeId("isOpenGLContextCreated");
+    static const Identifier countId("openGLContextsCreated");
     if (auto gObj = getMainController()->getGlobalVariableObject())
     {
-        gObj->setProperty(cubeId, var(true));
+        auto countVar = gObj->getProperty(countId);
+        if (countVar.isInt()) {
+            int count = countVar;
+            gObj->setProperty(countId, var(count + 1));
+        }
     }
     else
     {
