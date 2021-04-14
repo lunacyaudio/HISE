@@ -264,11 +264,8 @@ void FrontendProcessorEditor::newOpenGLContextCreated()
     static const Identifier countId("openGLContextsCreated");
     if (auto gObj = getMainController()->getGlobalVariableObject())
     {
-        auto countVar = gObj->getProperty(countId);
-        if (countVar.isInt()) {
-            int count = countVar;
-            gObj->setProperty(countId, var(count + 1));
-        }
+        int count = gObj->getProperty(countId);
+        gObj->setProperty(countId, var(count + 1));
     }
     else
     {
