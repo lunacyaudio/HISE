@@ -360,6 +360,12 @@ public:
 		/** Writes tags in preset XML */
 		void setTagsForPreset(var file, var listOfTags);
 
+		/** Parses author from presetXML */
+		String getAuthorFromPreset(var file);
+
+		/** Writes author in preset XML */
+		void setAuthorForPreset(var file, String authorName);
+
 		/** Returns a list of all available user presets as relative path. */
 		var getUserPresetList() const;
 

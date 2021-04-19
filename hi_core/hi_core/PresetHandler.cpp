@@ -2636,10 +2636,10 @@ void FileHandlerBase::checkAllSampleMaps()
 		}
 	}
 
-	if (falseName.isEmpty())
-		PresetHandler::showMessageWindow("All sample references are valid", "All sample maps have been scanned", PresetHandler::IconType::Info);
-	else
-		PresetHandler::showMessageWindow("Missing samples found", "The sample " + falseName + " wasn't found.", PresetHandler::IconType::Error);
+	// if (falseName.isEmpty())
+		// PresetHandler::showMessageWindow("All sample references are valid", "All sample maps have been scanned", PresetHandler::IconType::Info);
+	// else
+		// PresetHandler::showMessageWindow("Missing samples found", "The sample " + falseName + " wasn't found.", PresetHandler::IconType::Error);
 }
 
 

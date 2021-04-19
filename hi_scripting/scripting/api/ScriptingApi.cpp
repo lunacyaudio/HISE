@@ -839,6 +839,8 @@ struct ScriptingApi::Engine::Wrapper
 	API_VOID_METHOD_WRAPPER_1(Engine, setUserPresetTagList);
 	API_METHOD_WRAPPER_1(Engine, getTagsFromPreset);
 	API_VOID_METHOD_WRAPPER_2(Engine, setTagsForPreset);
+	API_METHOD_WRAPPER_1(Engine, getAuthorFromPreset);
+	API_VOID_METHOD_WRAPPER_2(Engine, setAuthorForPreset);
 	API_METHOD_WRAPPER_0(Engine, getUserPresetList);
 	API_METHOD_WRAPPER_0(Engine, getCurrentUserPresetName);
 	API_METHOD_WRAPPER_0(Engine, getCurrentUserPresetFile);
@@ -954,6 +956,8 @@ parentMidiProcessor(dynamic_cast<ScriptBaseMidiProcessor*>(p))
 	ADD_API_METHOD_1(loadUserPreset);
 	ADD_API_METHOD_1(getTagsFromPreset);
 	ADD_API_METHOD_2(setTagsForPreset);
+	ADD_API_METHOD_1(getAuthorFromPreset);
+	ADD_API_METHOD_2(setAuthorForPreset);
 	ADD_API_METHOD_0(getUserPresetList);
 	ADD_API_METHOD_0(isMpeEnabled);
 	ADD_API_METHOD_0(createMidiList);
@@ -1780,6 +1784,86 @@ void ScriptingApi::Engine::setTagsForPreset(var file, var listOfTags)
 				sa.add(l.toString());
 
 			getProcessor()->getMainController()->getUserPresetHandler().setTagsForPreset(userPreset, sa);
+		}
+	}
+	else
+	{
+		reportScriptError("User preset " + userPreset.getFullPathName() + " doesn't exist");
+	}
+}
+
+String ScriptingApi::Engine::getAuthorFromPreset(var file)
+{
+	auto name = ScriptingObjects::ScriptFile::getFileNameFromFile(file);
+	File userPreset;
+
+	if (File::isAbsolutePath(name))
+	{
+		userPreset = File(name);
+	}
+	else
+	{
+		#if USE_BACKEND
+			File userPresetRoot = GET_PROJECT_HANDLER(getProcessor()).getSubDirectory(ProjectHandler::SubDirectories::UserPresets);
+		#else
+			File userPresetRoot = FrontendHandler::getUserPresetDirectory();
+		#endif
+
+		userPreset = userPresetRoot.getChildFile(file.toString() + ".preset");
+	}
+
+	if (userPreset.existsAsFile())
+	{
+		auto content = userPreset.loadFileAsString();
+
+		static const String authorAttribute = "Author=\"";
+
+		if (content.contains(authorAttribute))
+		{
+			return content.fromFirstOccurrenceOf(authorAttribute, false, false).upToFirstOccurrenceOf("\"", false, false);
+		}
+		else {
+			return "";
+		}
+	}
+	else
+	{
+		reportScriptError("User preset " + userPreset.getFullPathName() + " doesn't exist");
+		return "";
+	}
+}
+
+void ScriptingApi::Engine::setAuthorForPreset(var file, String authorName)
+{
+	auto name = ScriptingObjects::ScriptFile::getFileNameFromFile(file);
+	File userPreset;
+
+	if (File::isAbsolutePath(name))
+	{
+		userPreset = File(name);
+	}
+	else
+	{
+		#if USE_BACKEND
+			File userPresetRoot = GET_PROJECT_HANDLER(getProcessor()).getSubDirectory(ProjectHandler::SubDirectories::UserPresets);
+		#else
+			File userPresetRoot = FrontendHandler::getUserPresetDirectory();
+		#endif
+
+		userPreset = userPresetRoot.getChildFile(file.toString() + ".preset");
+	}
+
+	if (userPreset.existsAsFile())
+	{
+		ScopedPointer<XmlElement> xml = XmlDocument::parse(userPreset);
+
+		if (xml != nullptr)
+		{
+			xml->setAttribute("Author", authorName);
+
+			auto newPresetContent = xml->createDocument("");
+
+			userPreset.replaceWithText(newPresetContent);
 		}
 	}
 	else
