@@ -471,6 +471,7 @@ WeakCallbackHolder::WeakCallbackHolder(ProcessorWithScriptingContent* p, const v
 	if (HiseJavascriptEngine::isJavascriptFunction(callback))
 	{
 		weakCallback = dynamic_cast<DebugableObjectBase*>(callback.getObject());
+		castedObj = callback.getObject();
 
 		// Store it ref-counted if the ref count is one to avoid deletion
 		if (callback.getObject()->getReferenceCount() == 1)
@@ -484,6 +485,7 @@ WeakCallbackHolder::WeakCallbackHolder(const WeakCallbackHolder& copy) :
 	ScriptingObject(const_cast<ProcessorWithScriptingContent*>(copy.getScriptProcessor())),
 	r(Result::ok()),
 	weakCallback(copy.weakCallback),
+	castedObj(copy.castedObj),
 	numExpectedArgs(copy.numExpectedArgs),
 	highPriority(copy.highPriority),
 	engineToUse(copy.engineToUse),
@@ -497,6 +499,7 @@ WeakCallbackHolder::WeakCallbackHolder(WeakCallbackHolder&& other):
 	ScriptingObject(other.getScriptProcessor()),
 	r(other.r),
 	weakCallback(other.weakCallback),
+	castedObj(other.castedObj),
 	numExpectedArgs(other.numExpectedArgs),
 	highPriority(other.highPriority),
 	anonymousFunctionRef(other.anonymousFunctionRef),
@@ -519,6 +522,7 @@ hise::WeakCallbackHolder& WeakCallbackHolder::operator=(WeakCallbackHolder&& oth
 
 	r = other.r;
 	weakCallback = other.weakCallback;
+	castedObj = other.castedObj;
 	numExpectedArgs = other.numExpectedArgs;
 	highPriority = other.highPriority;
 	anonymousFunctionRef = other.anonymousFunctionRef;
@@ -533,10 +537,16 @@ void WeakCallbackHolder::clear()
 {
 	engineToUse = nullptr;
 	weakCallback = nullptr;
+	castedObj = nullptr;
 	thisObject = nullptr;
 	args.clear();
 
 	decRefCount();
+}
+
+bool WeakCallbackHolder::matches(const var& f) const
+{
+	return castedObj == f.getObject();
 }
 
 void WeakCallbackHolder::call(var* arguments, int numArgs)
@@ -549,18 +559,12 @@ void WeakCallbackHolder::call(var* arguments, int numArgs)
 			auto copy = *this;
 			copy.args.addArray(arguments, numArgs);
 
-			var thisObjVar;
+			var thisObj;
 
-			if (auto ro = dynamic_cast<ReferenceCountedObject*>(thisObject.get()))
-			{
-				// If this fires, the object is not being ref-counted somewhere else
-				// and will be deleted when the thisObjVar goes out of scope
-				jassert(ro->getReferenceCount() > 1);
+			if (thisObject.get() != nullptr)
+				thisObj = var(dynamic_cast<ReferenceCountedObject*>(thisObject.get()));
 
-				thisObjVar = var(ro);
-			}
-
-			var::NativeFunctionArgs args_(thisObjVar, arguments, numArgs);
+			var::NativeFunctionArgs args_(thisObj, arguments, numArgs);
 			checkValidArguments(args_);
 			auto t = highPriority ? JavascriptThreadPool::Task::HiPriorityCallbackExecution : JavascriptThreadPool::Task::LowPriorityCallbackExecution;
 			getScriptProcessor()->getMainController_()->getJavascriptThreadPool().addJob(t, dynamic_cast<JavascriptProcessor*>(getScriptProcessor()), copy);
@@ -576,6 +580,32 @@ void WeakCallbackHolder::call(var* arguments, int numArgs)
 	}
 }
 
+Result WeakCallbackHolder::callSync(var* arguments, int numArgs)
+{
+	if (engineToUse.get() == nullptr)
+	{
+		clear();
+		return Result::fail("Engine is dangling");
+	}
+
+	if (weakCallback.get() != nullptr)
+	{
+		jassert(dynamic_cast<ReferenceCountedObject*>(weakCallback.get()) == castedObj);
+
+		var thisObj;
+
+		if (auto d = dynamic_cast<ReferenceCountedObject*>(thisObject.get()))
+			thisObj = var(d);
+
+		var::NativeFunctionArgs a(thisObj, arguments, numArgs);
+		engineToUse->callExternalFunction(var(castedObj), a, &r, true);
+	}
+	else
+		jassertfalse;
+
+	return r;
+}
+
 juce::Result WeakCallbackHolder::operator()(JavascriptProcessor* p)
 {
 	jassert_locked_script_thread(getScriptProcessor()->getMainController_());
@@ -588,13 +618,15 @@ juce::Result WeakCallbackHolder::operator()(JavascriptProcessor* p)
 
 	if (weakCallback.get() != nullptr)
 	{
+		jassert(dynamic_cast<ReferenceCountedObject*>(weakCallback.get()) == castedObj);
+
 		var thisObj;
 
 		if (auto d = dynamic_cast<ReferenceCountedObject*>(thisObject.get()))
 			thisObj = var(d);
 
 		var::NativeFunctionArgs a(thisObj, args.getRawDataPointer(), args.size());
-		engineToUse->callExternalFunction(var(dynamic_cast<ReferenceCountedObject*>(weakCallback.get())), a, &r);
+		engineToUse->callExternalFunction(var(castedObj), a, &r);
 
 		if (!r.wasOk())
 			debugError(dynamic_cast<Processor*>(p), r.getErrorMessage());
