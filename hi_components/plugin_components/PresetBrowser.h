@@ -65,7 +65,6 @@ public:
 	struct Options
 	{
 		Colour highlightColour;
-		Colour highlightedTextColour;
 		Colour backgroundColour;
 		Colour textColour;
 		Font font;

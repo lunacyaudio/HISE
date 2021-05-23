@@ -236,8 +236,6 @@ private:
 				file.hasFileExtension("ttf") ||
 #if JUCE_WINDOWS
 				file.getFileName() == "LinkWindows" ||
-#elif JUCE_LINUX
-				file.getFileName() == "LinkLinux" ||
 #else
 				file.getFileName() == "LinkOSX" ||
 #endif

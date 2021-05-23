@@ -205,7 +205,7 @@ public:
 		/** Returns the parent directory as File. */
 		var getParentDirectory();
 
-		/** Returns the new directory created at the file location, if directory doesn't already exist */
+		/** Returns the new directory made at the file location if directory doesn't already exist */
 		var createDirectory(String directoryName);
 
 		/** Returns a String representation of that file. */
