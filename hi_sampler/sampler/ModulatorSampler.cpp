@@ -674,7 +674,7 @@ void ModulatorSampler::refreshMemoryUsage()
 	const auto temporaryBufferShouldBeFloatingPoint = !sampleMap->isMonolith();
 #endif
 
-	if (temporaryBufferIsFloatingPoint != temporaryBufferShouldBeFloatingPoint || temporaryVoiceBuffer.getNumSamples() == 0)
+	if (temporaryBufferIsFloatingPoint != temporaryBufferShouldBeFloatingPoint)
 	{
 		temporaryVoiceBuffer = hlac::HiseSampleBuffer(temporaryBufferShouldBeFloatingPoint, 2, 0);
 
