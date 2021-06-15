@@ -515,7 +515,7 @@ void AudioSampleBufferComponentBase::paintOverChildren(Graphics& g)
 	g.setFont(f);
 
 
-    static const String text = "Drop audio file or Right click to open browser";
+    static const String text = "Drop audio file or right-click to open browser";
     
     const int w = f.getStringWidth(text) + 20;
 

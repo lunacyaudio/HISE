@@ -247,6 +247,9 @@ public:
 		/** Opens a Explorer / Finder window that points to the file. */
 		void show();
 
+		/** Extracts the ZIP archive if this file is a .zip file. */
+		void extractZipFile(var targetDirectory, bool overwriteFiles, var callback);
+
 		// ================================================= End of API calls
 
 		File f;
@@ -254,6 +257,8 @@ public:
 	private:
 
 		struct Wrapper;
+
+		JUCE_DECLARE_WEAK_REFERENCEABLE(ScriptFile);
 	};
 
 	class ScriptAudioFile : public ConstScriptingObject,
